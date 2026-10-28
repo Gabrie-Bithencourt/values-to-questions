@@ -1,10 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Bot, CheckCircle2, ClipboardCheck, Filter, Globe, Mic, Search, Send, Settings, UserRound, type LucideIcon } from "lucide-react";
+import { Bot, CheckCircle2, ClipboardCheck, Filter, Globe, MessageSquare, Mic, Search, Send, Settings, UserRound, type LucideIcon } from "lucide-react";
 import { LegacyShell, PageHeader } from "@/components/legacy-shell";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/recrutamento")({
@@ -46,7 +45,7 @@ const inicial: Candidato[] = [
   { id: "7", nome: "Juliana Alves", etapa: "ia" },
 ];
 
-type Config = { voz: boolean; roteiro: string; envio: "selecionados" | "todos"; auto: boolean };
+type Config = { modo: "voz" | "chat"; roteiro: string; envio: "selecionados" | "todos"; auto: boolean };
 
 function Recrutamento() {
   const [vaga, setVaga] = useState(vagas[0]!);
@@ -54,7 +53,7 @@ function Recrutamento() {
   const [candidatos, setCandidatos] = useState(inicial);
   const [selecionados, setSelecionados] = useState<string[]>([]);
   const [aberto, setAberto] = useState(false);
-  const [config, setConfig] = useState<Config>({ voz: false, roteiro: roteiros[0]!.id, envio: "selecionados", auto: false });
+  const [config, setConfig] = useState<Config>({ modo: "chat", roteiro: roteiros[0]!.id, envio: "selecionados", auto: false });
   const [aviso, setAviso] = useState("");
 
   const termo = busca.trim().toLowerCase();
@@ -147,14 +146,21 @@ function Recrutamento() {
           </DialogHeader>
 
           <div className="space-y-5 text-sm">
-            <label className="flex items-center gap-3 rounded-lg border p-3">
-              <Mic className="size-5 text-muted-foreground" />
-              <span className="min-w-0 flex-1">
-                <span className="block font-medium">Entrevista de voz</span>
-                <span className="text-xs text-muted-foreground">O candidato responde falando, em vez de digitar.</span>
-              </span>
-              <Switch checked={config.voz} onCheckedChange={(voz) => setConfig((c) => ({ ...c, voz }))} aria-label="Entrevista de voz" />
-            </label>
+            <fieldset>
+              <legend className="mb-2 font-medium">Formato da entrevista</legend>
+              <div className="grid gap-2 sm:grid-cols-2">
+                {([
+                  { id: "chat", nome: "Chat", detalhe: "O candidato responde por mensagens de texto.", icon: MessageSquare },
+                  { id: "voz", nome: "Voz", detalhe: "O candidato responde falando.", icon: Mic },
+                ] as const).map(({ id, nome, detalhe, icon: Icon }) => (
+                  <label key={id} className={cn("flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition", config.modo === id ? "border-primary bg-primary/5" : "hover:bg-slate-50")}>
+                    <input type="radio" name="modo" checked={config.modo === id} onChange={() => setConfig((c) => ({ ...c, modo: id }))} className="sr-only" />
+                    <Icon className="mt-0.5 size-5 shrink-0 text-muted-foreground" />
+                    <span><span className="block font-medium">{nome}</span><span className="text-xs text-muted-foreground">{detalhe}</span></span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
 
             <fieldset>
               <legend className="mb-2 font-medium">Roteiro da entrevista</legend>
