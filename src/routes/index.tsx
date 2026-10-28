@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import {
-  ArrowLeft, BarChart3, Check, Clock, FileText, Home, Loader2, MessageSquare, PenLine, Plus,
+  ArrowLeft, BarChart3, Check, FileText, Home, Loader2, MessageSquare, PenLine, Plus,
   Settings, Trash2, Users, Wand2, Sparkles, HeartHandshake, X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -21,38 +21,43 @@ export const Route = createFileRoute("/")({
 
 type Mode = "livre" | "fit";
 type Question = { id: string; text: string };
-type Section = { id: string; title: string; minutes: number; description?: string; behaviors?: string[]; questions: Question[] };
+type Section = { id: string; title: string; description?: string; behaviors?: string[]; questions: Question[] };
+type FitInput = { valores: string; comportamentos: string; atencao: string };
 
 const uid = () => Math.random().toString(36).slice(2, 9);
 const q = (text: string): Question => ({ id: uid(), text });
 
 function mockLivre(): Section[] {
   return [
-    { id: uid(), title: "Boas-vindas", minutes: 2, questions: [q("Agradeça a presença, apresente-se e explique como será a entrevista.")] },
-    { id: uid(), title: "Experiência profissional", minutes: 10, questions: [q("Fale sobre sua experiência mais recente."), q("Quais foram seus principais desafios nessa função?"), q("Como você lidou com eles?")] },
-    { id: uid(), title: "Trabalho em equipe", minutes: 8, questions: [q("Conte sobre uma situação em que precisou trabalhar com outras pessoas."), q("Como você lida com opiniões diferentes?")] },
-    { id: uid(), title: "Expectativas e encerramento", minutes: 5, questions: [q("O que você busca em um novo desafio?"), q("Tem alguma dúvida sobre a vaga ou a empresa?")] },
+    { id: uid(), title: "Boas-vindas", questions: [q("Agradeça a presença, apresente-se e explique como será a entrevista.")] },
+    { id: uid(), title: "Experiência profissional", questions: [q("Fale sobre sua experiência mais recente."), q("Quais foram seus principais desafios nessa função?"), q("Como você lidou com eles?")] },
+    { id: uid(), title: "Trabalho em equipe", questions: [q("Conte sobre uma situação em que precisou trabalhar com outras pessoas."), q("Como você lida com opiniões diferentes?")] },
+    { id: uid(), title: "Expectativas e encerramento", questions: [q("O que você busca em um novo desafio?"), q("Tem alguma dúvida sobre a vaga ou a empresa?")] },
   ];
 }
 
-function mockFit(): Section[] {
-  return [
-    { id: uid(), title: "Colaboração", minutes: 8, description: "Trabalhar em equipe, ouvir diferentes pontos de vista e construir soluções em conjunto.", behaviors: ["Escuta ativa", "Respeito a opiniões diversas", "Resolução construtiva de conflitos"], questions: [q("Conte sobre um projeto em que o resultado dependeu de várias pessoas. Qual foi seu papel?"), q("Como você age quando discorda de um colega?")] },
-    { id: uid(), title: "Responsabilidade", minutes: 7, description: "Compromisso com resultados, prazos e organização.", behaviors: ["Assume responsabilidade", "Planeja e prioriza tarefas"], questions: [q("Fale de uma vez em que algo deu errado sob sua responsabilidade. O que você fez?")] },
-    { id: uid(), title: "Foco no cliente", minutes: 7, description: "Entende as necessidades do cliente e busca gerar valor.", behaviors: ["Coloca o cliente no centro", "Busca soluções que gerem valor"], questions: [q("Descreva uma situação em que você foi além para atender um cliente.")] },
-    { id: uid(), title: "Pontos de atenção", minutes: 5, description: "Sinais de comportamentos que não combinam com a cultura.", behaviors: ["Resistência a mudanças", "Falta de comprometimento"], questions: [q("Como você reagiu à última grande mudança no seu trabalho?")] },
+function mockFit(hasAtencao: boolean): Section[] {
+  const sections: Section[] = [
+    { id: uid(), title: "Colaboração", description: "Trabalhar em equipe, ouvir diferentes pontos de vista e construir soluções em conjunto.", behaviors: ["Escuta ativa", "Respeito a opiniões diversas", "Resolução construtiva de conflitos"], questions: [q("Conte sobre um projeto em que o resultado dependeu de várias pessoas. Qual foi seu papel?"), q("Como você age quando discorda de um colega?")] },
+    { id: uid(), title: "Responsabilidade", description: "Compromisso com resultados, prazos e organização.", behaviors: ["Assume responsabilidade", "Planeja e prioriza tarefas"], questions: [q("Fale de uma vez em que algo deu errado sob sua responsabilidade. O que você fez?")] },
+    { id: uid(), title: "Foco no cliente", description: "Entende as necessidades do cliente e busca gerar valor.", behaviors: ["Coloca o cliente no centro", "Busca soluções que gerem valor"], questions: [q("Descreva uma situação em que você foi além para atender um cliente.")] },
   ];
+  if (hasAtencao) {
+    sections.push({ id: uid(), title: "Pontos de atenção", description: "Sinais de comportamentos que não combinam com a cultura.", behaviors: ["Resistência a mudanças", "Falta de comprometimento"], questions: [q("Como você reagiu à última grande mudança no seu trabalho?")] });
+  }
+  return sections;
 }
 
 function Index() {
   const [mode, setMode] = useState<Mode>("livre");
   const [script, setScript] = useState<Record<Mode, Section[]>>({ livre: [], fit: [] });
   const [loading, setLoading] = useState(false);
+  const [fit, setFit] = useState<FitInput>({ valores: "", comportamentos: "", atencao: "" });
 
   const generate = () => {
     setLoading(true);
     setTimeout(() => {
-      setScript((s) => ({ ...s, [mode]: mode === "livre" ? mockLivre() : mockFit() }));
+      setScript((s) => ({ ...s, [mode]: mode === "livre" ? mockLivre() : mockFit(fit.atencao.trim() !== "") }));
       setLoading(false);
     }, 1200);
   };
@@ -76,7 +81,7 @@ function Index() {
 
         <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
           <section className="space-y-6">
-            {mode === "livre" ? <LivreForm key="livre" /> : <FitForm key="fit" />}
+            {mode === "livre" ? <LivreForm key="livre" /> : <FitForm key="fit" value={fit} onChange={setFit} />}
             <Button size="lg" onClick={generate} disabled={loading} className="w-full sm:w-auto">
               {loading ? <Loader2 className="animate-spin" /> : <Sparkles />}
               {script[mode].length ? "Gerar novamente" : "Gerar roteiro com IA"}
