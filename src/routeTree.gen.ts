@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as EmpresaRouteImport } from './routes/empresa'
+import { Route as RecrutamentoRouteImport } from './routes/recrutamento'
 import { Route as RelatorioIndexRouteImport } from './routes/relatorio/index'
 import { Route as RelatorioIdRouteImport } from './routes/relatorio/$id'
 
@@ -22,6 +23,11 @@ const IndexRoute = IndexRouteImport.update({
 const EmpresaRoute = EmpresaRouteImport.update({
   id: '/empresa',
   path: '/empresa',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecrutamentoRoute = RecrutamentoRouteImport.update({
+  id: '/recrutamento',
+  path: '/recrutamento',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RelatorioIndexRoute = RelatorioIndexRouteImport.update({
@@ -38,12 +44,14 @@ const RelatorioIdRoute = RelatorioIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/empresa': typeof EmpresaRoute
+  '/recrutamento': typeof RecrutamentoRoute
   '/relatorio/$id': typeof RelatorioIdRoute
   '/relatorio/': typeof RelatorioIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/empresa': typeof EmpresaRoute
+  '/recrutamento': typeof RecrutamentoRoute
   '/relatorio/$id': typeof RelatorioIdRoute
   '/relatorio': typeof RelatorioIndexRoute
 }
@@ -51,20 +59,29 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/empresa': typeof EmpresaRoute
+  '/recrutamento': typeof RecrutamentoRoute
   '/relatorio/$id': typeof RelatorioIdRoute
   '/relatorio/': typeof RelatorioIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/empresa' | '/relatorio/$id' | '/relatorio/'
+  fullPaths:
+    '/' | '/empresa' | '/recrutamento' | '/relatorio/$id' | '/relatorio/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/empresa' | '/relatorio/$id' | '/relatorio'
-  id: '__root__' | '/' | '/empresa' | '/relatorio/$id' | '/relatorio/'
+  to: '/' | '/empresa' | '/recrutamento' | '/relatorio/$id' | '/relatorio'
+  id:
+    | '__root__'
+    | '/'
+    | '/empresa'
+    | '/recrutamento'
+    | '/relatorio/$id'
+    | '/relatorio/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   EmpresaRoute: typeof EmpresaRoute
+  RecrutamentoRoute: typeof RecrutamentoRoute
   RelatorioIdRoute: typeof RelatorioIdRoute
   RelatorioIndexRoute: typeof RelatorioIndexRoute
 }
@@ -83,6 +100,13 @@ declare module '@tanstack/react-router' {
       path: '/empresa'
       fullPath: '/empresa'
       preLoaderRoute: typeof EmpresaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recrutamento': {
+      id: '/recrutamento'
+      path: '/recrutamento'
+      fullPath: '/recrutamento'
+      preLoaderRoute: typeof RecrutamentoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/relatorio/': {
@@ -105,6 +129,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   EmpresaRoute: EmpresaRoute,
+  RecrutamentoRoute: RecrutamentoRoute,
   RelatorioIdRoute: RelatorioIdRoute,
   RelatorioIndexRoute: RelatorioIndexRoute,
 }

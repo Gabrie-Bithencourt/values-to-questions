@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
 import {
   Award, Bot, Brain, Briefcase, Building2, ClipboardCheck, ClipboardList, FileText, HeartHandshake, HeartPulse, LayoutDashboard,
@@ -6,20 +6,20 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-type To = "/" | "/relatorio" | "/empresa";
-type Item = { label: string; icon: LucideIcon; to?: To; exact?: boolean; badge?: string };
+type To = "/" | "/relatorio" | "/empresa" | "/recrutamento";
+type Item = { label: string; icon: LucideIcon; to?: To; exact?: boolean; badge?: string; excludePaths?: string[] };
 
 // Menu lateral do sistema (administrador). Os itens sem rota são só contexto visual.
-// "Entrevista com IA" é o módulo: fica ativo em qualquer tela da visão do administrador.
+// "Entrevista com IA" é o módulo: fica ativo nas telas dele (Dashboard e Roteiros), não em Recrutamento e Seleção.
 const adminMenu: Item[] = [
   { label: "Pesquisa Engajamento", icon: ClipboardList },
   { label: "Avaliação De Desempenho", icon: ClipboardCheck },
   { label: "Sucessão e Carreira", icon: Rocket },
   { label: "Pesquisa NPS/eNPS", icon: TrendingUp },
-  { label: "Recrutamento e Seleção", icon: UserPlus },
+  { label: "Recrutamento e Seleção", icon: UserPlus, to: "/recrutamento" },
   { label: "Questionários", icon: ClipboardList },
   { label: "Mapeamento Perfil - People Skills", icon: Brain },
-  { label: "Entrevista com IA", icon: Bot, to: "/", badge: "Novo" },
+  { label: "Entrevista com IA", icon: Bot, to: "/", badge: "Novo", excludePaths: ["/recrutamento"] },
   { label: "Mapeamento Psicossocial - NR1", icon: HeartPulse, badge: "Novo" },
   { label: "Competências", icon: Award },
 ];
@@ -42,9 +42,11 @@ const topNav: { label: string; icon: LucideIcon; to: To; exact?: boolean }[] = [
 
 const itemCls =
   "group flex w-full items-center gap-4 rounded-md px-3 py-2.5 text-left text-sm text-slate-600 transition hover:bg-slate-100 data-[status=active]:bg-black data-[status=active]:text-white data-[status=active]:shadow-md";
+const itemOffCls = "group flex w-full items-center gap-4 rounded-md px-3 py-2.5 text-left text-sm text-slate-600 transition hover:bg-slate-100";
 const iconCls = "size-5 shrink-0 text-slate-400 group-data-[status=active]:text-white";
 
 function NavLink({ item }: { item: Item }) {
+  const pathname = useRouterState({ select: (r) => r.location.pathname });
   const Icon = item.icon;
   const content = (
     <>
@@ -53,7 +55,11 @@ function NavLink({ item }: { item: Item }) {
       {item.badge && <span className="rounded-full bg-orange-500 px-2 py-0.5 text-[10px] font-semibold text-white">{item.badge}</span>}
     </>
   );
-  if (item.to) return <Link to={item.to} activeOptions={{ exact: item.exact ?? false }} className={itemCls}>{content}</Link>;
+  if (item.to) {
+    const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+    const off = item.excludePaths?.some((p) => pathname.replace(base, "").startsWith(p));
+    return <Link to={item.to} activeOptions={{ exact: item.exact ?? false }} className={off ? itemOffCls : itemCls}>{content}</Link>;
+  }
   return <a href="#" onClick={(e) => e.preventDefault()} className={itemCls}>{content}</a>;
 }
 
