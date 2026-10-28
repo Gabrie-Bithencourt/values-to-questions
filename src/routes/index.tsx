@@ -139,26 +139,27 @@ function ModeCard({ active, onClick, icon, title, desc }: { active: boolean; onC
   );
 }
 
-function Field({ label, hint, placeholder, rows = 4, max = 500 }: { label: string; hint?: string; placeholder: string; rows?: number; max?: number }) {
-  const [v, setV] = useState("");
+function Field({ label, hint, placeholder, rows = 4, max = 500, value, onChange }: { label: string; hint?: string; placeholder: string; rows?: number; max?: number; value: string; onChange: (v: string) => void }) {
   return (
     <label className="block">
       <span className="block text-sm font-semibold">{label}</span>
       {hint && <span className="mt-0.5 block text-xs text-muted-foreground">{hint}</span>}
       <textarea
-        value={v}
+        value={value}
         maxLength={max}
-        onChange={(e) => setV(e.target.value)}
+        onChange={(e) => onChange(e.target.value)}
         rows={rows}
         placeholder={placeholder}
         className="mt-2 w-full resize-none rounded-lg border border-input bg-card px-3 py-2.5 text-sm outline-none placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-ring/30"
       />
-      <span className="block text-right text-xs text-muted-foreground">{v.length}/{max}</span>
+      <span className="block text-right text-xs text-muted-foreground">{value.length}/{max}</span>
     </label>
   );
 }
 
 function LivreForm() {
+  const [avaliar, setAvaliar] = useState("");
+  const [extras, setExtras] = useState("");
   return (
     <>
       <Field
@@ -166,28 +167,31 @@ function LivreForm() {
         hint="Descreva em poucas palavras os principais pontos da entrevista."
         rows={6}
         placeholder={"Exemplos:\n• Desafios profissionais anteriores\n• Experiência com trabalho em equipe\n• Disponibilidade de horário\n• O que considera um bom ambiente de trabalho"}
+        value={avaliar}
+        onChange={setAvaliar}
       />
       <Field
         label="Informações adicionais (opcional)"
         hint="Vaga, senioridade, competências ou perguntas que você já tem em mente."
         placeholder="Ex.: Vaga de analista pleno, time remoto, foco em comunicação…"
+        value={extras}
+        onChange={setExtras}
       />
     </>
   );
 }
 
-function FitForm() {
+function FitForm({ value, onChange }: { value: FitInput; onChange: (v: FitInput) => void }) {
   return (
     <>
-      <Field label="Quais são os valores mais importantes da empresa?" rows={3} placeholder="Ex.: Colaboração, respeito, inovação, responsabilidade e foco no cliente." />
-      <Field label="Quais comportamentos você espera ver no dia a dia?" rows={3} placeholder="Ex.: Trabalho em equipe, proatividade, comunicação clara e postura ética." />
-      <Field label="Pontos de atenção" hint="Comportamentos que não combinam com a cultura." rows={3} placeholder="Ex.: Falta de comprometimento, resistência a mudanças, desrespeito com colegas." />
+      <Field label="Quais são os valores mais importantes da empresa?" rows={3} placeholder="Ex.: Colaboração, respeito, inovação, responsabilidade e foco no cliente." value={value.valores} onChange={(v) => onChange({ ...value, valores: v })} />
+      <Field label="Quais comportamentos você espera ver no dia a dia?" rows={3} placeholder="Ex.: Trabalho em equipe, proatividade, comunicação clara e postura ética." value={value.comportamentos} onChange={(v) => onChange({ ...value, comportamentos: v })} />
+      <Field label="Pontos de atenção" hint="Comportamentos que não combinam com a cultura." rows={3} placeholder="Ex.: Falta de comprometimento, resistência a mudanças, desrespeito com colegas." value={value.atencao} onChange={(v) => onChange({ ...value, atencao: v })} />
     </>
   );
 }
 
 function ScriptPanel({ mode, loading, sections, onChange }: { mode: Mode; loading: boolean; sections: Section[]; onChange: (s: Section[]) => void }) {
-  const total = sections.reduce((a, s) => a + s.minutes, 0);
   const update = (id: string, patch: Partial<Section>) => onChange(sections.map((s) => (s.id === id ? { ...s, ...patch } : s)));
 
   return (
@@ -217,13 +221,12 @@ function ScriptPanel({ mode, loading, sections, onChange }: { mode: Mode; loadin
             ))}
           </ol>
           <button
-            onClick={() => onChange([...sections, { id: uid(), title: mode === "fit" ? "Novo critério" : "Nova etapa", minutes: 5, questions: [q("")] }])}
+            onClick={() => onChange([...sections, { id: uid(), title: mode === "fit" ? "Novo critério" : "Nova etapa", questions: [q("")] }])}
             className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-dashed bg-card py-3 text-sm font-medium text-primary hover:bg-accent"
           >
             <Plus className="size-4" /> {mode === "fit" ? "Adicionar critério" : "Adicionar etapa"}
           </button>
-          <div className="mt-4 flex items-center justify-between rounded-xl bg-card p-4">
-            <div className="flex items-center gap-2 text-sm"><Clock className="size-4 text-muted-foreground" /> Duração estimada <strong>{total} min</strong></div>
+          <div className="mt-4 flex justify-end rounded-xl bg-card p-4">
             <Button>Salvar roteiro</Button>
           </div>
         </>
@@ -239,11 +242,6 @@ function SectionCard({ index, section, onChange, onRemove }: { index: number; se
       <div className="flex items-center gap-3">
         <span className="grid size-7 shrink-0 place-items-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">{index}</span>
         <input value={section.title} onChange={(e) => onChange({ title: e.target.value })} className="min-w-0 flex-1 rounded bg-transparent px-1 font-semibold outline-none focus:bg-muted" />
-        <span className="flex shrink-0 items-center gap-1 text-xs text-muted-foreground">
-          <Clock className="size-3.5" />
-          <input type="number" min={1} value={section.minutes} onChange={(e) => onChange({ minutes: Number(e.target.value) || 0 })} className="w-9 rounded bg-transparent text-right outline-none focus:bg-muted" />
-          min
-        </span>
         <button onClick={onRemove} aria-label="Remover" className="rounded p-1 text-muted-foreground opacity-0 hover:text-destructive group-hover:opacity-100"><Trash2 className="size-4" /></button>
       </div>
 
