@@ -226,9 +226,7 @@ function ScriptPanel({ mode, loading, sections, onChange }: { mode: Mode; loadin
           >
             <Plus className="size-4" /> {mode === "fit" ? "Adicionar critério" : "Adicionar etapa"}
           </button>
-          <div className="mt-4 flex justify-end rounded-xl bg-card p-4">
-            <Button>Salvar roteiro</Button>
-          </div>
+          <Button className="mt-4 w-full">Salvar roteiro</Button>
         </>
       )}
     </aside>
