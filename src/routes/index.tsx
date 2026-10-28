@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import {
-  ArrowLeft, BarChart3, Check, FileText, Home, Loader2, MessageSquare, PenLine, Plus,
+  ArrowLeft, BarChart3, Check, Eye, FileText, Home, Loader2, MessageSquare, PenLine, Plus,
   Settings, Trash2, Users, Wand2, Sparkles, HeartHandshake, X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -53,6 +53,13 @@ export function Index() {
   const [script, setScript] = useState<Record<Mode, Section[]>>({ livre: [], fit: [] });
   const [loading, setLoading] = useState(false);
   const [fit, setFit] = useState<FitInput>({ valores: "", comportamentos: "", atencao: "" });
+  const [clientView, setClientView] = useState(false);
+
+  const toggleClientView = () => {
+    const next = !clientView;
+    setClientView(next);
+    setMode(next ? "fit" : "livre");
+  };
 
   const generate = () => {
     setLoading(true);
@@ -69,6 +76,15 @@ export function Index() {
         <header className="flex items-center gap-3">
           <button className="rounded-md p-1 text-muted-foreground hover:bg-muted" aria-label="Voltar"><ArrowLeft className="size-5" /></button>
           <h1 className="text-2xl font-semibold tracking-tight">Criar roteiro de entrevista</h1>
+          <Button
+            variant={clientView ? "default" : "outline"}
+            size="sm"
+            onClick={toggleClientView}
+            aria-pressed={clientView}
+            className="ml-auto gap-2"
+          >
+            <Eye className="size-4" /> Visão do cliente
+          </Button>
         </header>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
           Preencha o contexto, deixe a IA montar o esqueleto e ajuste tudo do seu jeito.
