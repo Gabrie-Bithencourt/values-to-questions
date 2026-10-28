@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import {
-  ArrowLeft, BarChart3, Check, Clock, FileText, Home, Loader2, MessageSquare, PenLine, Plus,
+  ArrowLeft, BarChart3, Check, FileText, Home, Loader2, MessageSquare, PenLine, Plus,
   Settings, Trash2, Users, Wand2, Sparkles, HeartHandshake, X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -21,38 +21,43 @@ export const Route = createFileRoute("/")({
 
 type Mode = "livre" | "fit";
 type Question = { id: string; text: string };
-type Section = { id: string; title: string; minutes: number; description?: string; behaviors?: string[]; questions: Question[] };
+type Section = { id: string; title: string; description?: string; behaviors?: string[]; questions: Question[] };
+type FitInput = { valores: string; comportamentos: string; atencao: string };
 
 const uid = () => Math.random().toString(36).slice(2, 9);
 const q = (text: string): Question => ({ id: uid(), text });
 
 function mockLivre(): Section[] {
   return [
-    { id: uid(), title: "Boas-vindas", minutes: 2, questions: [q("Agradeça a presença, apresente-se e explique como será a entrevista.")] },
-    { id: uid(), title: "Experiência profissional", minutes: 10, questions: [q("Fale sobre sua experiência mais recente."), q("Quais foram seus principais desafios nessa função?"), q("Como você lidou com eles?")] },
-    { id: uid(), title: "Trabalho em equipe", minutes: 8, questions: [q("Conte sobre uma situação em que precisou trabalhar com outras pessoas."), q("Como você lida com opiniões diferentes?")] },
-    { id: uid(), title: "Expectativas e encerramento", minutes: 5, questions: [q("O que você busca em um novo desafio?"), q("Tem alguma dúvida sobre a vaga ou a empresa?")] },
+    { id: uid(), title: "Boas-vindas", questions: [q("Agradeça a presença, apresente-se e explique como será a entrevista.")] },
+    { id: uid(), title: "Experiência profissional", questions: [q("Fale sobre sua experiência mais recente."), q("Quais foram seus principais desafios nessa função?"), q("Como você lidou com eles?")] },
+    { id: uid(), title: "Trabalho em equipe", questions: [q("Conte sobre uma situação em que precisou trabalhar com outras pessoas."), q("Como você lida com opiniões diferentes?")] },
+    { id: uid(), title: "Expectativas e encerramento", questions: [q("O que você busca em um novo desafio?"), q("Tem alguma dúvida sobre a vaga ou a empresa?")] },
   ];
 }
 
-function mockFit(): Section[] {
-  return [
-    { id: uid(), title: "Colaboração", minutes: 8, description: "Trabalhar em equipe, ouvir diferentes pontos de vista e construir soluções em conjunto.", behaviors: ["Escuta ativa", "Respeito a opiniões diversas", "Resolução construtiva de conflitos"], questions: [q("Conte sobre um projeto em que o resultado dependeu de várias pessoas. Qual foi seu papel?"), q("Como você age quando discorda de um colega?")] },
-    { id: uid(), title: "Responsabilidade", minutes: 7, description: "Compromisso com resultados, prazos e organização.", behaviors: ["Assume responsabilidade", "Planeja e prioriza tarefas"], questions: [q("Fale de uma vez em que algo deu errado sob sua responsabilidade. O que você fez?")] },
-    { id: uid(), title: "Foco no cliente", minutes: 7, description: "Entende as necessidades do cliente e busca gerar valor.", behaviors: ["Coloca o cliente no centro", "Busca soluções que gerem valor"], questions: [q("Descreva uma situação em que você foi além para atender um cliente.")] },
-    { id: uid(), title: "Pontos de atenção", minutes: 5, description: "Sinais de comportamentos que não combinam com a cultura.", behaviors: ["Resistência a mudanças", "Falta de comprometimento"], questions: [q("Como você reagiu à última grande mudança no seu trabalho?")] },
+function mockFit(hasAtencao: boolean): Section[] {
+  const sections: Section[] = [
+    { id: uid(), title: "Colaboração", description: "Trabalhar em equipe, ouvir diferentes pontos de vista e construir soluções em conjunto.", behaviors: ["Escuta ativa", "Respeito a opiniões diversas", "Resolução construtiva de conflitos"], questions: [q("Conte sobre um projeto em que o resultado dependeu de várias pessoas. Qual foi seu papel?"), q("Como você age quando discorda de um colega?")] },
+    { id: uid(), title: "Responsabilidade", description: "Compromisso com resultados, prazos e organização.", behaviors: ["Assume responsabilidade", "Planeja e prioriza tarefas"], questions: [q("Fale de uma vez em que algo deu errado sob sua responsabilidade. O que você fez?")] },
+    { id: uid(), title: "Foco no cliente", description: "Entende as necessidades do cliente e busca gerar valor.", behaviors: ["Coloca o cliente no centro", "Busca soluções que gerem valor"], questions: [q("Descreva uma situação em que você foi além para atender um cliente.")] },
   ];
+  if (hasAtencao) {
+    sections.push({ id: uid(), title: "Pontos de atenção", description: "Sinais de comportamentos que não combinam com a cultura.", behaviors: ["Resistência a mudanças", "Falta de comprometimento"], questions: [q("Como você reagiu à última grande mudança no seu trabalho?")] });
+  }
+  return sections;
 }
 
-function Index() {
+export function Index() {
   const [mode, setMode] = useState<Mode>("livre");
   const [script, setScript] = useState<Record<Mode, Section[]>>({ livre: [], fit: [] });
   const [loading, setLoading] = useState(false);
+  const [fit, setFit] = useState<FitInput>({ valores: "", comportamentos: "", atencao: "" });
 
   const generate = () => {
     setLoading(true);
     setTimeout(() => {
-      setScript((s) => ({ ...s, [mode]: mode === "livre" ? mockLivre() : mockFit() }));
+      setScript((s) => ({ ...s, [mode]: mode === "livre" ? mockLivre() : mockFit(fit.atencao.trim() !== "") }));
       setLoading(false);
     }, 1200);
   };
@@ -76,7 +81,7 @@ function Index() {
 
         <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
           <section className="space-y-6">
-            {mode === "livre" ? <LivreForm key="livre" /> : <FitForm key="fit" />}
+            {mode === "livre" ? <LivreForm key="livre" /> : <FitForm key="fit" value={fit} onChange={setFit} />}
             <Button size="lg" onClick={generate} disabled={loading} className="w-full sm:w-auto">
               {loading ? <Loader2 className="animate-spin" /> : <Sparkles />}
               {script[mode].length ? "Gerar novamente" : "Gerar roteiro com IA"}
@@ -134,26 +139,27 @@ function ModeCard({ active, onClick, icon, title, desc }: { active: boolean; onC
   );
 }
 
-function Field({ label, hint, placeholder, rows = 4, max = 500 }: { label: string; hint?: string; placeholder: string; rows?: number; max?: number }) {
-  const [v, setV] = useState("");
+function Field({ label, hint, placeholder, rows = 4, max = 500, value, onChange }: { label: string; hint?: string; placeholder: string; rows?: number; max?: number; value: string; onChange: (v: string) => void }) {
   return (
     <label className="block">
       <span className="block text-sm font-semibold">{label}</span>
       {hint && <span className="mt-0.5 block text-xs text-muted-foreground">{hint}</span>}
       <textarea
-        value={v}
+        value={value}
         maxLength={max}
-        onChange={(e) => setV(e.target.value)}
+        onChange={(e) => onChange(e.target.value)}
         rows={rows}
         placeholder={placeholder}
         className="mt-2 w-full resize-none rounded-lg border border-input bg-card px-3 py-2.5 text-sm outline-none placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-ring/30"
       />
-      <span className="block text-right text-xs text-muted-foreground">{v.length}/{max}</span>
+      <span className="block text-right text-xs text-muted-foreground">{value.length}/{max}</span>
     </label>
   );
 }
 
 function LivreForm() {
+  const [avaliar, setAvaliar] = useState("");
+  const [extras, setExtras] = useState("");
   return (
     <>
       <Field
@@ -161,28 +167,31 @@ function LivreForm() {
         hint="Descreva em poucas palavras os principais pontos da entrevista."
         rows={6}
         placeholder={"Exemplos:\n• Desafios profissionais anteriores\n• Experiência com trabalho em equipe\n• Disponibilidade de horário\n• O que considera um bom ambiente de trabalho"}
+        value={avaliar}
+        onChange={setAvaliar}
       />
       <Field
         label="Informações adicionais (opcional)"
         hint="Vaga, senioridade, competências ou perguntas que você já tem em mente."
         placeholder="Ex.: Vaga de analista pleno, time remoto, foco em comunicação…"
+        value={extras}
+        onChange={setExtras}
       />
     </>
   );
 }
 
-function FitForm() {
+function FitForm({ value, onChange }: { value: FitInput; onChange: (v: FitInput) => void }) {
   return (
     <>
-      <Field label="Quais são os valores mais importantes da empresa?" rows={3} placeholder="Ex.: Colaboração, respeito, inovação, responsabilidade e foco no cliente." />
-      <Field label="Quais comportamentos você espera ver no dia a dia?" rows={3} placeholder="Ex.: Trabalho em equipe, proatividade, comunicação clara e postura ética." />
-      <Field label="Pontos de atenção" hint="Comportamentos que não combinam com a cultura." rows={3} placeholder="Ex.: Falta de comprometimento, resistência a mudanças, desrespeito com colegas." />
+      <Field label="Quais são os valores mais importantes da empresa?" rows={3} placeholder="Ex.: Colaboração, respeito, inovação, responsabilidade e foco no cliente." value={value.valores} onChange={(v) => onChange({ ...value, valores: v })} />
+      <Field label="Quais comportamentos você espera ver no dia a dia?" rows={3} placeholder="Ex.: Trabalho em equipe, proatividade, comunicação clara e postura ética." value={value.comportamentos} onChange={(v) => onChange({ ...value, comportamentos: v })} />
+      <Field label="Pontos de atenção" hint="Comportamentos que não combinam com a cultura." rows={3} placeholder="Ex.: Falta de comprometimento, resistência a mudanças, desrespeito com colegas." value={value.atencao} onChange={(v) => onChange({ ...value, atencao: v })} />
     </>
   );
 }
 
 function ScriptPanel({ mode, loading, sections, onChange }: { mode: Mode; loading: boolean; sections: Section[]; onChange: (s: Section[]) => void }) {
-  const total = sections.reduce((a, s) => a + s.minutes, 0);
   const update = (id: string, patch: Partial<Section>) => onChange(sections.map((s) => (s.id === id ? { ...s, ...patch } : s)));
 
   return (
@@ -212,15 +221,12 @@ function ScriptPanel({ mode, loading, sections, onChange }: { mode: Mode; loadin
             ))}
           </ol>
           <button
-            onClick={() => onChange([...sections, { id: uid(), title: mode === "fit" ? "Novo critério" : "Nova etapa", minutes: 5, questions: [q("")] }])}
+            onClick={() => onChange([...sections, { id: uid(), title: mode === "fit" ? "Novo critério" : "Nova etapa", questions: [q("")] }])}
             className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-dashed bg-card py-3 text-sm font-medium text-primary hover:bg-accent"
           >
             <Plus className="size-4" /> {mode === "fit" ? "Adicionar critério" : "Adicionar etapa"}
           </button>
-          <div className="mt-4 flex items-center justify-between rounded-xl bg-card p-4">
-            <div className="flex items-center gap-2 text-sm"><Clock className="size-4 text-muted-foreground" /> Duração estimada <strong>{total} min</strong></div>
-            <Button>Salvar roteiro</Button>
-          </div>
+          <Button className="mt-4 w-full">Salvar roteiro</Button>
         </>
       )}
     </aside>
@@ -234,11 +240,6 @@ function SectionCard({ index, section, onChange, onRemove }: { index: number; se
       <div className="flex items-center gap-3">
         <span className="grid size-7 shrink-0 place-items-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">{index}</span>
         <input value={section.title} onChange={(e) => onChange({ title: e.target.value })} className="min-w-0 flex-1 rounded bg-transparent px-1 font-semibold outline-none focus:bg-muted" />
-        <span className="flex shrink-0 items-center gap-1 text-xs text-muted-foreground">
-          <Clock className="size-3.5" />
-          <input type="number" min={1} value={section.minutes} onChange={(e) => onChange({ minutes: Number(e.target.value) || 0 })} className="w-9 rounded bg-transparent text-right outline-none focus:bg-muted" />
-          min
-        </span>
         <button onClick={onRemove} aria-label="Remover" className="rounded p-1 text-muted-foreground opacity-0 hover:text-destructive group-hover:opacity-100"><Trash2 className="size-4" /></button>
       </div>
 
