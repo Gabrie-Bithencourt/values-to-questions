@@ -9,11 +9,11 @@ import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 // `npm run build:pages` (GitHub Pages) sets GITHUB_PAGES=true: the app is built as a static SPA
 // (no server/nitro) served under BASE_PATH (e.g. "/nome-do-repositorio/"). Any other build
 // (Lovable, dev) keeps the original SSR behaviour.
-const isPages = process.env.GITHUB_PAGES === "true";
-const base = process.env.BASE_PATH ?? "/";
+const isPages = process.env["GITHUB_PAGES"] === "true";
+const base = process.env["BASE_PATH"] ?? "/";
 
 export default defineConfig({
-  nitro: isPages ? false : undefined,
+  ...(isPages ? { nitro: false as const } : {}),
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this

@@ -3,7 +3,7 @@
 import { spawnSync } from "node:child_process";
 import { copyFileSync, existsSync } from "node:fs";
 
-const repo = process.env.GITHUB_REPOSITORY?.split("/")[1];
+const repo = process.env["GITHUB_REPOSITORY"]?.split("/")[1];
 const basePath = process.env.BASE_PATH ?? (repo ? `/${repo}/` : "/");
 
 const result = spawnSync("npx", ["vite", "build"], {

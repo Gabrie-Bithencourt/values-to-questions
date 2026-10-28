@@ -84,7 +84,7 @@ export function Index() {
             aria-pressed={clientView}
             className="ml-auto gap-2"
           >
-            <Eye className="size-4" /> Visão do cliente
+            <Eye className="size-4" /> Visão da empresa
           </Button>
         </header>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
