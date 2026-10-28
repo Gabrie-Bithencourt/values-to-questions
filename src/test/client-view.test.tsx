@@ -1,24 +1,21 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { render, screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
 
-vi.mock("@/components/AppSidebar", () => ({ AppSidebar: () => null }));
+import { RoteiroBuilder } from "@/components/roteiro/RoteiroBuilder";
 
-import { Index } from "@/routes/index";
-
-describe("Client view", () => {
-  it("offers only the fit cultural mode", { timeout: 20000 }, () => {
-    render(<Index />);
-    fireEvent.click(screen.getByRole("button", { name: /visão da empresa/i }));
+describe("Visão da empresa", () => {
+  it("offers only the fit cultural fields", { timeout: 20000 }, () => {
+    render(<RoteiroBuilder variant="empresa" />);
 
     expect(screen.queryByRole("button", { name: /Roteiro livre/i })).toBeNull();
-    expect(screen.getByRole("button", { name: /Fit cultural/i })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /Fit cultural/i })).toBeNull();
+    expect(screen.getByText(/Quais são os valores mais importantes da empresa/i)).toBeTruthy();
   });
 
-  it("brings both modes back when the client view is turned off", { timeout: 20000 }, () => {
-    render(<Index />);
-    fireEvent.click(screen.getByRole("button", { name: /visão da empresa/i }));
-    fireEvent.click(screen.getByRole("button", { name: /visão da empresa/i }));
+  it("offers both modes in the admin view", { timeout: 20000 }, () => {
+    render(<RoteiroBuilder variant="admin" />);
 
     expect(screen.getByRole("button", { name: /Roteiro livre/i })).toBeTruthy();
+    expect(screen.getByRole("button", { name: /Fit cultural/i })).toBeTruthy();
   });
 });

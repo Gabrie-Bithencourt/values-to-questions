@@ -1,9 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 
-vi.mock("@/components/AppSidebar", () => ({ AppSidebar: () => null }));
-
-import { Index } from "@/routes/index";
+import { RoteiroBuilder } from "@/components/roteiro/RoteiroBuilder";
 
 // A behaviour chip that only appears in the fit cultural script.
 const GENERATED = "Escuta ativa";
@@ -22,14 +20,14 @@ async function clickFitAndGenerate() {
 
 describe("Fit cultural script generation", () => {
   it("leaves out the 'Pontos de atenção' section when nothing was typed there", { timeout: 20000 }, async () => {
-    render(<Index />);
+    render(<RoteiroBuilder />);
     await clickFitAndGenerate();
 
     expect(sectionTitles()).not.toContain("Pontos de atenção");
   });
 
   it("includes the 'Pontos de atenção' section once the user describes one", { timeout: 20000 }, async () => {
-    render(<Index />);
+    render(<RoteiroBuilder />);
     fireEvent.click(screen.getByRole("button", { name: /Fit cultural/i }));
     fireEvent.change(screen.getByPlaceholderText(/Falta de comprometimento/i), {
       target: { value: "Falta de comprometimento" },
@@ -40,7 +38,7 @@ describe("Fit cultural script generation", () => {
   });
 
   it("shows no time estimate in the generated script", { timeout: 20000 }, async () => {
-    render(<Index />);
+    render(<RoteiroBuilder />);
     await clickFitAndGenerate();
 
     expect(screen.queryByText(/duração estimada/i)).toBeNull();

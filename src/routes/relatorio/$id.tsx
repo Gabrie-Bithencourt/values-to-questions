@@ -5,10 +5,11 @@ import {
   PenLine, Play, Shield, Sparkles, Target, User, Users, FileSearch,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { AppSidebar } from "@/components/AppSidebar";
+import { LegacyShell } from "@/components/legacy-shell";
+import { entrevistas } from "@/lib/entrevistas";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/entrevistas")({
+export const Route = createFileRoute("/relatorio/$id")({
   head: () => ({
     meta: [
       { title: "Análise da entrevista | MenvieIA" },
@@ -45,16 +46,18 @@ const evidencias = [
 ];
 
 function Analise() {
+  const { id } = Route.useParams();
+  const e = entrevistas.find((x) => x.id === id) ?? entrevistas[0]!;
+  const [dia, hora] = e.data.split(" ");
   const [filter, setFilter] = useState<Status | "todas">("todas");
   const list = filter === "todas" ? comps : comps.filter((c) => c.status === filter);
   const count = (k: Status | "todas") => (k === "todas" ? comps.length : comps.filter((c) => c.status === k).length);
 
   return (
-    <div className="flex min-h-screen bg-background text-foreground">
-      <AppSidebar />
-      <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-10">
+    <LegacyShell variant="admin">
+      <div>
         <header className="flex items-center gap-3">
-          <Link to="/" className="rounded-md p-1 text-muted-foreground hover:bg-muted" aria-label="Voltar"><ArrowLeft className="size-5" /></Link>
+          <Link to="/relatorio" className="rounded-md p-1 text-muted-foreground hover:bg-muted" aria-label="Voltar"><ArrowLeft className="size-5" /></Link>
           <h1 className="text-2xl font-semibold tracking-tight">Análise da entrevista</h1>
         </header>
         <p className="mt-1 text-sm text-muted-foreground">Confira o resultado da avaliação e as evidências encontradas durante a entrevista.</p>
@@ -65,7 +68,7 @@ function Analise() {
             <div className="grid gap-4 rounded-2xl border bg-card p-5 @md:grid-cols-2 @3xl:grid-cols-[1.2fr_1fr_1fr_auto]">
               <div className="flex items-center gap-3">
                 <span className="grid size-12 place-items-center rounded-full bg-accent text-primary"><User className="size-6" /></span>
-                <div><p className="font-semibold">João Silva</p><p className="text-xs text-muted-foreground">Candidato</p><p className="text-xs text-muted-foreground">joao.silva@email.com</p></div>
+                <div><p className="font-semibold">{e.nome}</p><p className="text-xs text-muted-foreground">{e.tipo}</p><p className="text-xs text-muted-foreground">{e.email}</p></div>
               </div>
               <div className="text-sm @3xl:border-l @3xl:pl-4">
                 <p className="text-xs text-muted-foreground">Roteiro utilizado</p>
@@ -74,10 +77,10 @@ function Analise() {
               </div>
               <div className="text-sm @3xl:border-l @3xl:pl-4">
                 <p className="text-xs text-muted-foreground">Data da entrevista</p>
-                <p className="mt-1">25/10/2026 · 14:30</p>
+                <p className="mt-1">{dia} · {hora}</p>
                 <p className="mt-1 flex items-center gap-1 text-muted-foreground"><Clock className="size-3.5" /> 32 minutos</p>
               </div>
-              <span className="h-fit w-fit rounded-md bg-accent px-2.5 py-1 text-xs font-semibold text-primary">Concluída</span>
+              <span className="h-fit w-fit rounded-md bg-accent px-2.5 py-1 text-xs font-semibold text-primary">{e.status}</span>
             </div>
 
             {/* Métricas */}
@@ -152,12 +155,12 @@ function Analise() {
             <div className="flex flex-wrap gap-2">
               <Button variant="outline" size="sm"><Download /> Exportar relatório</Button>
               <Button variant="outline" size="sm"><PenLine /> Revisar avaliação</Button>
-              <Button size="sm" asChild><Link to="/"><ArrowLeft /> Voltar para a lista</Link></Button>
+              <Button size="sm" asChild><Link to="/relatorio"><ArrowLeft /> Voltar para a lista</Link></Button>
             </div>
           </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </LegacyShell>
   );
 }
 

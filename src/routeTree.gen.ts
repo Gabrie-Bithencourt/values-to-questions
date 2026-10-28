@@ -10,43 +10,63 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as EntrevistasRouteImport } from './routes/entrevistas'
+import { Route as EmpresaRouteImport } from './routes/empresa'
+import { Route as RelatorioIndexRouteImport } from './routes/relatorio/index'
+import { Route as RelatorioIdRouteImport } from './routes/relatorio/$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const EntrevistasRoute = EntrevistasRouteImport.update({
-  id: '/entrevistas',
-  path: '/entrevistas',
+const EmpresaRoute = EmpresaRouteImport.update({
+  id: '/empresa',
+  path: '/empresa',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RelatorioIndexRoute = RelatorioIndexRouteImport.update({
+  id: '/relatorio/',
+  path: '/relatorio/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RelatorioIdRoute = RelatorioIdRouteImport.update({
+  id: '/relatorio/$id',
+  path: '/relatorio/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/entrevistas': typeof EntrevistasRoute
+  '/empresa': typeof EmpresaRoute
+  '/relatorio/$id': typeof RelatorioIdRoute
+  '/relatorio/': typeof RelatorioIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/entrevistas': typeof EntrevistasRoute
+  '/empresa': typeof EmpresaRoute
+  '/relatorio/$id': typeof RelatorioIdRoute
+  '/relatorio': typeof RelatorioIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/entrevistas': typeof EntrevistasRoute
+  '/empresa': typeof EmpresaRoute
+  '/relatorio/$id': typeof RelatorioIdRoute
+  '/relatorio/': typeof RelatorioIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/entrevistas'
+  fullPaths: '/' | '/empresa' | '/relatorio/$id' | '/relatorio/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/entrevistas'
-  id: '__root__' | '/' | '/entrevistas'
+  to: '/' | '/empresa' | '/relatorio/$id' | '/relatorio'
+  id: '__root__' | '/' | '/empresa' | '/relatorio/$id' | '/relatorio/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  EntrevistasRoute: typeof EntrevistasRoute
+  EmpresaRoute: typeof EmpresaRoute
+  RelatorioIdRoute: typeof RelatorioIdRoute
+  RelatorioIndexRoute: typeof RelatorioIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -58,11 +78,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/entrevistas': {
-      id: '/entrevistas'
-      path: '/entrevistas'
-      fullPath: '/entrevistas'
-      preLoaderRoute: typeof EntrevistasRouteImport
+    '/empresa': {
+      id: '/empresa'
+      path: '/empresa'
+      fullPath: '/empresa'
+      preLoaderRoute: typeof EmpresaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/relatorio/': {
+      id: '/relatorio/'
+      path: '/relatorio'
+      fullPath: '/relatorio/'
+      preLoaderRoute: typeof RelatorioIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/relatorio/$id': {
+      id: '/relatorio/$id'
+      path: '/relatorio/$id'
+      fullPath: '/relatorio/$id'
+      preLoaderRoute: typeof RelatorioIdRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -70,7 +104,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  EntrevistasRoute: EntrevistasRoute,
+  EmpresaRoute: EmpresaRoute,
+  RelatorioIdRoute: RelatorioIdRoute,
+  RelatorioIndexRoute: RelatorioIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
