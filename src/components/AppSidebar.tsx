@@ -16,7 +16,7 @@ export function AppSidebar() {
           <FileText className="size-4" /> Roteiros de entrevista
         </Link>
         <Link to="/entrevistas" className={linkCls} activeProps={{ className: activeCls }}>
-          <MessageSquare className="size-4" /> Entrevistas
+          <MessageSquare className="size-4" /> Relatório
         </Link>
       </nav>
     </aside>

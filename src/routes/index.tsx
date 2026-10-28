@@ -39,6 +39,7 @@ function mockLivre(): Section[] {
 
 function mockFit(hasAtencao: boolean): Section[] {
   const sections: Section[] = [
+    { id: uid(), title: "Boas-vindas", questions: [q("Agradeça a presença, apresente-se e explique como será a entrevista.")] },
     { id: uid(), title: "Colaboração", description: "Trabalhar em equipe, ouvir diferentes pontos de vista e construir soluções em conjunto.", behaviors: ["Escuta ativa", "Respeito a opiniões diversas", "Resolução construtiva de conflitos"], questions: [q("Conte sobre um projeto em que o resultado dependeu de várias pessoas. Qual foi seu papel?"), q("Como você age quando discorda de um colega?")] },
     { id: uid(), title: "Responsabilidade", description: "Compromisso com resultados, prazos e organização.", behaviors: ["Assume responsabilidade", "Planeja e prioriza tarefas"], questions: [q("Fale de uma vez em que algo deu errado sob sua responsabilidade. O que você fez?")] },
     { id: uid(), title: "Foco no cliente", description: "Entende as necessidades do cliente e busca gerar valor.", behaviors: ["Coloca o cliente no centro", "Busca soluções que gerem valor"], questions: [q("Descreva uma situação em que você foi além para atender um cliente.")] },
