@@ -48,7 +48,7 @@ function mockFit(hasAtencao: boolean): Section[] {
   return sections;
 }
 
-function Index() {
+export function Index() {
   const [mode, setMode] = useState<Mode>("livre");
   const [script, setScript] = useState<Record<Mode, Section[]>>({ livre: [], fit: [] });
   const [loading, setLoading] = useState(false);
