@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
 import {
-  Award, BarChart3, Brain, Briefcase, Building2, ClipboardCheck, ClipboardList, FileText, HeartHandshake, HeartPulse,
+  Award, BarChart3, Bot, Brain, Briefcase, Building2, ClipboardCheck, ClipboardList, FileText, HeartHandshake, HeartPulse,
   type LucideIcon, Menu, Power, Rocket, Sparkles, TrendingUp, User, UserPlus, Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -10,6 +10,7 @@ type To = "/" | "/relatorio" | "/empresa";
 type Item = { label: string; icon: LucideIcon; to?: To; exact?: boolean; badge?: string };
 
 // Menu lateral do sistema (administrador). Os itens sem rota são só contexto visual.
+// "Entrevista com IA" é o módulo: fica ativo em qualquer tela da visão do administrador.
 const adminMenu: Item[] = [
   { label: "Pesquisa Engajamento", icon: ClipboardList },
   { label: "Avaliação De Desempenho", icon: ClipboardCheck },
@@ -18,6 +19,7 @@ const adminMenu: Item[] = [
   { label: "Recrutamento e Seleção", icon: UserPlus },
   { label: "Questionários", icon: ClipboardList },
   { label: "Mapeamento Perfil - People Skills", icon: Brain },
+  { label: "Entrevista com IA", icon: Bot, to: "/", badge: "Novo" },
   { label: "Mapeamento Psicossocial - NR1", icon: HeartPulse, badge: "Novo" },
   { label: "Competências", icon: Award },
 ];
