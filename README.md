@@ -27,3 +27,18 @@ cd <repository-name>
 npm i
 npm run dev
 ```
+
+> Requer **Node.js 22.12+** (ou 20.19+). Se o `npm i` falhar com erro de módulo nativo
+> (`@rolldown/binding-*` / `@oxc-parser/binding-*`), apague `node_modules` e `package-lock.json`
+> e rode `npm install --legacy-peer-deps`. Se ainda faltar o módulo nativo no Windows, instale-os à mão:
+> `npm install --no-save --legacy-peer-deps @rolldown/binding-win32-x64-msvc@1.2.1 @oxc-parser/binding-win32-x64-msvc@0.120.0`
+
+## Publicar no GitHub Pages
+
+1. Suba o código para o GitHub (branch `main` ou `master`).
+2. No repositório: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+3. O workflow [.github/workflows/deploy-pages.yml](.github/workflows/deploy-pages.yml) roda a cada push e publica em
+   `https://<usuario>.github.io/<repositorio>/`.
+
+Para testar o build estático localmente: `npm run build:pages` (saída em `dist/client`).
+O build normal (`npm run build`) continua igual, usado pelo Lovable.

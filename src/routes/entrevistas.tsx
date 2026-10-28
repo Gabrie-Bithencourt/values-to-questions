@@ -11,9 +11,9 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/entrevistas")({
   head: () => ({
     meta: [
-      { title: "Análise da entrevista | TalentAI" },
+      { title: "Análise da entrevista | MenvieIA" },
       { name: "description", content: "Veja o resultado da avaliação, competências e evidências encontradas na entrevista." },
-      { property: "og:title", content: "Análise da entrevista | TalentAI" },
+      { property: "og:title", content: "Análise da entrevista | MenvieIA" },
       { property: "og:description", content: "Veja o resultado da avaliação, competências e evidências encontradas na entrevista." },
     ],
   }),
@@ -52,7 +52,7 @@ function Analise() {
   return (
     <div className="flex min-h-screen bg-background text-foreground">
       <AppSidebar />
-      <main className="min-w-0 flex-1 px-6 py-6 lg:px-10">
+      <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-10">
         <header className="flex items-center gap-3">
           <Link to="/" className="rounded-md p-1 text-muted-foreground hover:bg-muted" aria-label="Voltar"><ArrowLeft className="size-5" /></Link>
           <h1 className="text-2xl font-semibold tracking-tight">Análise da entrevista</h1>
@@ -60,37 +60,37 @@ function Analise() {
         <p className="mt-1 text-sm text-muted-foreground">Confira o resultado da avaliação e as evidências encontradas durante a entrevista.</p>
 
         <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
-          <div className="min-w-0 space-y-5">
+          <div className="@container min-w-0 space-y-5">
             {/* Candidato */}
-            <div className="grid gap-4 rounded-2xl border bg-card p-5 md:grid-cols-[1.2fr_1fr_1fr_auto]">
+            <div className="grid gap-4 rounded-2xl border bg-card p-5 @md:grid-cols-2 @3xl:grid-cols-[1.2fr_1fr_1fr_auto]">
               <div className="flex items-center gap-3">
                 <span className="grid size-12 place-items-center rounded-full bg-accent text-primary"><User className="size-6" /></span>
                 <div><p className="font-semibold">João Silva</p><p className="text-xs text-muted-foreground">Candidato</p><p className="text-xs text-muted-foreground">joao.silva@email.com</p></div>
               </div>
-              <div className="text-sm md:border-l md:pl-4">
+              <div className="text-sm @3xl:border-l @3xl:pl-4">
                 <p className="text-xs text-muted-foreground">Roteiro utilizado</p>
                 <p className="mt-1">Fit Cultural · Versão 3</p>
                 <span className="mt-1 inline-block rounded-md bg-accent px-2 py-0.5 text-xs font-medium text-primary">Roteiro de avaliação</span>
               </div>
-              <div className="text-sm md:border-l md:pl-4">
+              <div className="text-sm @3xl:border-l @3xl:pl-4">
                 <p className="text-xs text-muted-foreground">Data da entrevista</p>
                 <p className="mt-1">25/10/2026 · 14:30</p>
                 <p className="mt-1 flex items-center gap-1 text-muted-foreground"><Clock className="size-3.5" /> 32 minutos</p>
               </div>
-              <span className="h-fit rounded-md bg-accent px-2.5 py-1 text-xs font-semibold text-primary">Concluída</span>
+              <span className="h-fit w-fit rounded-md bg-accent px-2.5 py-1 text-xs font-semibold text-primary">Concluída</span>
             </div>
 
             {/* Métricas */}
-            <div className="grid gap-4 rounded-2xl border bg-card p-5 sm:grid-cols-2 lg:grid-cols-4">
-              <div className="flex items-center gap-3">
-                <div className="relative grid size-16 place-items-center">
+            <div className="grid gap-x-6 gap-y-5 rounded-2xl border bg-card p-5 @md:grid-cols-3 @3xl:grid-cols-4">
+              <div className="flex items-center gap-3 @md:col-span-3 @3xl:col-span-1">
+                <div className="relative grid size-16 shrink-0 place-items-center">
                   <svg viewBox="0 0 36 36" className="absolute inset-0 -rotate-90">
                     <circle cx="18" cy="18" r="15.5" fill="none" className="stroke-muted" strokeWidth="3" />
                     <circle cx="18" cy="18" r="15.5" fill="none" className="stroke-primary" strokeWidth="3" strokeDasharray={`${0.7 * 97.4} 97.4`} strokeLinecap="round" />
                   </svg>
                   <span className="text-lg font-semibold">3,5</span>
                 </div>
-                <div><p className="text-sm font-semibold">Resultado geral</p><p className="text-xs text-muted-foreground">/ 5</p><span className="mt-1 inline-block rounded bg-accent px-2 py-0.5 text-xs font-medium text-primary">Bom alinhamento</span></div>
+                <div className="min-w-0"><p className="text-sm font-semibold">Resultado geral</p><p className="text-xs text-muted-foreground">/ 5</p><span className="mt-1 inline-block rounded bg-accent px-2 py-0.5 text-xs font-medium text-primary">Bom alinhamento</span></div>
               </div>
               <Metric label="Competências identificadas" value={<>3 <span className="text-sm">de 4</span></>} pct={75} />
               <Metric label="Com evidência suficiente" value="3" pct={75} />
@@ -142,7 +142,7 @@ function Analise() {
             <div className="rounded-2xl border bg-card p-5">
               <h2 className="flex items-center gap-2 font-semibold"><FileSearch className="size-5 text-primary" /> Evidências da entrevista</h2>
               <p className="text-xs text-muted-foreground">Veja os trechos das respostas que fundamentaram a avaliação.</p>
-              <button className="mt-3 flex w-full items-center gap-2 rounded-lg border px-3 py-2 text-sm hover:bg-muted">
+              <button className="mt-3 flex w-full flex-wrap items-center gap-2 rounded-lg border px-3 py-2 text-sm hover:bg-muted">
                 <Play className="size-4 text-primary" /> <span className="font-medium text-primary">Ouvir gravação</span>
                 <span className="text-xs text-muted-foreground">(quando disponível)</span><span className="ml-auto text-xs text-muted-foreground">32:00</span>
               </button>
@@ -163,7 +163,7 @@ function Analise() {
 
 function Metric({ label, value, pct, muted }: { label: string; value: React.ReactNode; pct: number; muted?: boolean }) {
   return (
-    <div className="sm:border-l sm:pl-4">
+    <div className="@3xl:border-l @3xl:pl-4">
       <p className="text-xs text-muted-foreground">{label}</p>
       <p className="mt-1 text-2xl font-semibold">{value}</p>
       <div className="mt-2 h-1.5 rounded-full bg-muted"><div className={cn("h-full rounded-full", muted ? "bg-muted-foreground/50" : "bg-primary")} style={{ width: `${pct}%` }} /></div>
@@ -175,24 +175,24 @@ function CompCard({ c }: { c: Comp }) {
   const warn = c.status === "insuficiente";
   const Icon = c.icon;
   return (
-    <div className={cn("grid gap-4 rounded-2xl border p-5", warn ? "bg-warning-soft" : "bg-card")}>
-      <div className="flex items-start gap-3">
+    <div className={cn("grid gap-4 rounded-2xl border p-4 @md:p-5", warn ? "bg-warning-soft" : "bg-card")}>
+      <div className="flex flex-wrap items-start gap-3">
         <span className={cn("grid size-11 shrink-0 place-items-center rounded-full", warn ? "bg-card text-warning" : "bg-accent text-primary")}><Icon className="size-5" /></span>
-        <div className="min-w-0 flex-1"><p className="font-semibold">{c.name}</p><p className="text-xs text-muted-foreground">{c.perguntas} pergunta{c.perguntas > 1 && "s"} relacionada{c.perguntas > 1 && "s"}</p></div>
+        <div className="min-w-0 flex-1 basis-40"><p className="font-semibold">{c.name}</p><p className="text-xs text-muted-foreground">{c.perguntas} pergunta{c.perguntas > 1 && "s"} relacionada{c.perguntas > 1 && "s"}</p></div>
         <span className={cn("rounded-md px-2.5 py-1 text-xs font-medium", warn ? "bg-card text-warning" : "bg-accent text-primary")}>{warn ? "Evidência insuficiente" : "Identificada"}</span>
         <span className="rounded-lg border bg-card px-3 py-1 text-sm"><b className="text-lg">{c.nota ?? "—"}</b> <span className="text-muted-foreground">/ 5</span></span>
       </div>
-      <div className="grid gap-4 pl-14 md:grid-cols-[160px_1fr_auto]">
+      <div className="grid gap-4 @md:pl-14 @2xl:grid-cols-[160px_1fr_auto]">
         <div>
           <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Evidência</p>
           <p className={cn("text-sm font-semibold", warn ? "text-warning" : "text-primary")}>{warn ? "Insuficiente" : "Suficiente"}</p>
           <p className="text-xs text-muted-foreground">{c.respostas} resposta{c.respostas > 1 && "s"} analisada{c.respostas > 1 && "s"}</p>
         </div>
-        <div className="md:border-l md:pl-4">
+        <div className="@2xl:border-l @2xl:pl-4">
           <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Justificativa</p>
           <p className="text-sm">{c.justificativa}</p>
         </div>
-        <ChevronRight className="hidden size-4 self-center text-muted-foreground md:block" />
+        <ChevronRight className="hidden size-4 self-center text-muted-foreground @2xl:block" />
       </div>
     </div>
   );
@@ -203,7 +203,7 @@ function Evidence({ e }: { e: (typeof evidencias)[number] }) {
   const Icon = e.icon;
   return (
     <div className={cn("rounded-xl border p-3", !e.ok && "bg-warning-soft")}>
-      <div className="flex items-center gap-1.5 text-xs">
+      <div className="flex flex-wrap items-center gap-1.5 text-xs">
         <Icon className={cn("size-4", e.ok ? "text-primary" : "text-warning")} />
         <span className={cn("rounded-full px-2 py-0.5 font-medium", e.ok ? "bg-accent text-primary" : "text-warning")}>{e.comp}</span>
         <span className="text-muted-foreground">·</span>
