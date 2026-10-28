@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Bot, CheckCircle2, ClipboardCheck, Filter, Globe, MessageSquare, Mic, Search, Send, Settings, UserRound, type LucideIcon } from "lucide-react";
+import { Bot, CheckCircle2, ChevronDown, ClipboardCheck, Filter, Globe, MessageSquare, Mic, Search, Send, Settings, Share, UserRound, type LucideIcon } from "lucide-react";
 import { LegacyShell, PageHeader } from "@/components/legacy-shell";
 import { Checkbox } from "@/components/ui/checkbox";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
@@ -45,7 +46,8 @@ const inicial: Candidato[] = [
   { id: "7", nome: "Juliana Alves", etapa: "ia" },
 ];
 
-type Config = { modo: "voz" | "chat"; roteiro: string; envio: "selecionados" | "todos"; auto: boolean };
+type Modo = "voz" | "chat";
+type Config = { modo: Modo; roteiro: string; envio: "selecionados" | "todos"; auto: boolean };
 
 function Recrutamento() {
   const [vaga, setVaga] = useState(vagas[0]!);
@@ -54,6 +56,8 @@ function Recrutamento() {
   const [selecionados, setSelecionados] = useState<string[]>([]);
   const [aberto, setAberto] = useState(false);
   const [config, setConfig] = useState<Config>({ modo: "chat", roteiro: roteiros[0]!.id, envio: "selecionados", auto: false });
+  const [acaoAberta, setAcaoAberta] = useState(false);
+  const [acao, setAcao] = useState<{ modo: Modo; roteiro: string }>({ modo: "chat", roteiro: roteiros[0]!.id });
   const [aviso, setAviso] = useState("");
 
   const termo = busca.trim().toLowerCase();
@@ -70,6 +74,15 @@ function Recrutamento() {
     setSelecionados((s) => s.filter((id) => !ids.has(id)));
     setAviso(ids.size ? `Convite da entrevista com IA enviado para ${ids.size} candidato(s).` : "Configurações salvas.");
     setAberto(false);
+  };
+
+  const marcados = candidatos.filter((c) => selecionados.includes(c.id));
+  const enviarAcao = () => {
+    const ids = new Set(marcados.map((c) => c.id));
+    setCandidatos((cs) => cs.map((c) => (ids.has(c.id) ? { ...c, convite: true } : c)));
+    setSelecionados([]);
+    setAviso(`Convite da entrevista com IA (${acao.modo === "voz" ? "voz" : "chat"}) enviado para ${ids.size} candidato(s).`);
+    setAcaoAberta(false);
   };
 
   const roteiroAtual = roteiros.find((r) => r.id === config.roteiro)!;
@@ -94,6 +107,20 @@ function Recrutamento() {
             <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder="Buscar candidato..." className="w-full rounded-lg border border-input bg-card py-2 pl-9 pr-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-ring/30" />
           </span>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button type="button" className="ml-auto inline-flex items-center gap-2 rounded-md bg-cyan-500 px-4 py-2 text-xs font-bold uppercase tracking-wide text-white hover:bg-cyan-600">
+                <Share className="size-4" /> Ações <ChevronDown className="size-3" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-64">
+              <DropdownMenuItem onSelect={() => setAcaoAberta(true)} className="font-medium"><Bot className="size-4" /> Entrevista com IA</DropdownMenuItem>
+              <DropdownMenuItem>Enviar Prova Online</DropdownMenuItem>
+              <DropdownMenuItem>Enviar Vídeo Entrevistas</DropdownMenuItem>
+              <DropdownMenuItem>Enviar email para candidato(s)</DropdownMenuItem>
+              <DropdownMenuItem>Agendamento</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         {aviso && (
@@ -122,7 +149,7 @@ function Recrutamento() {
                 <ul className="flex-1 space-y-2 p-2">
                   {lista.map((c) => (
                     <li key={c.id} className="flex items-center gap-2 rounded-md bg-white p-3 text-sm shadow-sm">
-                      {id === "ia" && <Checkbox checked={selecionados.includes(c.id)} onCheckedChange={() => toggle(c.id)} aria-label={`Selecionar ${c.nome}`} />}
+                      <Checkbox checked={selecionados.includes(c.id)} onCheckedChange={() => toggle(c.id)} aria-label={`Selecionar ${c.nome}`} />
                       <span className="grid size-8 shrink-0 place-items-center rounded-full bg-slate-200 text-slate-500"><UserRound className="size-4" /></span>
                       <span className="min-w-0 flex-1">
                         <span className="block truncate font-medium">{c.nome}</span>
@@ -146,33 +173,8 @@ function Recrutamento() {
           </DialogHeader>
 
           <div className="space-y-5 text-sm">
-            <fieldset>
-              <legend className="mb-2 font-medium">Formato da entrevista</legend>
-              <div className="grid gap-2 sm:grid-cols-2">
-                {([
-                  { id: "chat", nome: "Chat", detalhe: "O candidato responde por mensagens de texto.", icon: MessageSquare },
-                  { id: "voz", nome: "Voz", detalhe: "O candidato responde falando.", icon: Mic },
-                ] as const).map(({ id, nome, detalhe, icon: Icon }) => (
-                  <label key={id} className={cn("flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition", config.modo === id ? "border-primary bg-primary/5" : "hover:bg-slate-50")}>
-                    <input type="radio" name="modo" checked={config.modo === id} onChange={() => setConfig((c) => ({ ...c, modo: id }))} className="sr-only" />
-                    <Icon className="mt-0.5 size-5 shrink-0 text-muted-foreground" />
-                    <span><span className="block font-medium">{nome}</span><span className="text-xs text-muted-foreground">{detalhe}</span></span>
-                  </label>
-                ))}
-              </div>
-            </fieldset>
-
-            <fieldset>
-              <legend className="mb-2 font-medium">Roteiro da entrevista</legend>
-              <div className="space-y-2">
-                {roteiros.map((r) => (
-                  <label key={r.id} className={cn("flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition", config.roteiro === r.id ? "border-primary bg-primary/5" : "hover:bg-slate-50")}>
-                    <input type="radio" name="roteiro" checked={config.roteiro === r.id} onChange={() => setConfig((c) => ({ ...c, roteiro: r.id }))} className="mt-1 accent-primary" />
-                    <span><span className="block font-medium">{r.nome}</span><span className="text-xs text-muted-foreground">{r.detalhe}</span></span>
-                  </label>
-                ))}
-              </div>
-            </fieldset>
+            <FormatoField name="modo" value={config.modo} onChange={(modo) => setConfig((c) => ({ ...c, modo }))} />
+            <RoteiroField name="roteiro" value={config.roteiro} onChange={(roteiro) => setConfig((c) => ({ ...c, roteiro }))} />
 
             <fieldset>
               <legend className="mb-2 font-medium">Envios</legend>
@@ -206,6 +208,65 @@ function Recrutamento() {
           <p className="sr-only">Roteiro selecionado: {roteiroAtual.nome}</p>
         </DialogContent>
       </Dialog>
+      <Dialog open={acaoAberta} onOpenChange={setAcaoAberta}>
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Enviar entrevista com IA</DialogTitle>
+            <DialogDescription>Escolha o formato e o roteiro. O convite vai para os candidatos selecionados no quadro.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-5 text-sm">
+            <FormatoField name="acao-modo" value={acao.modo} onChange={(modo) => setAcao((c) => ({ ...c, modo }))} />
+            <RoteiroField name="acao-roteiro" value={acao.roteiro} onChange={(roteiro) => setAcao((c) => ({ ...c, roteiro }))} />
+            <fieldset>
+              <legend className="mb-2 font-medium">Envios</legend>
+              <p className="rounded-lg border bg-slate-50 p-3">Enviar para selecionados ({marcados.length})</p>
+              {marcados.length === 0 && <p className="mt-2 text-xs text-muted-foreground">Marque ao menos um candidato no quadro para enviar.</p>}
+            </fieldset>
+          </div>
+          <DialogFooter className="gap-2 sm:gap-2">
+            <button type="button" onClick={() => setAcaoAberta(false)} className="rounded-lg border px-4 py-2 text-sm hover:bg-slate-50">Cancelar</button>
+            <button type="button" disabled={marcados.length === 0} onClick={enviarAcao} className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50">
+              <Send className="size-4" /> Enviar ({marcados.length})
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </LegacyShell>
+  );
+}
+
+function FormatoField({ name, value, onChange }: { name: string; value: Modo; onChange: (v: Modo) => void }) {
+  return (
+    <fieldset>
+      <legend className="mb-2 font-medium">Formato da entrevista</legend>
+      <div className="grid gap-2 sm:grid-cols-2">
+        {([
+          { id: "chat", nome: "Chat", detalhe: "O candidato responde por mensagens de texto.", icon: MessageSquare },
+          { id: "voz", nome: "Voz", detalhe: "O candidato responde falando.", icon: Mic },
+        ] as const).map(({ id, nome, detalhe, icon: Icon }) => (
+          <label key={id} className={cn("flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition", value === id ? "border-primary bg-primary/5" : "hover:bg-slate-50")}>
+            <input type="radio" name={name} checked={value === id} onChange={() => onChange(id)} className="sr-only" />
+            <Icon className="mt-0.5 size-5 shrink-0 text-muted-foreground" />
+            <span><span className="block font-medium">{nome}</span><span className="text-xs text-muted-foreground">{detalhe}</span></span>
+          </label>
+        ))}
+      </div>
+    </fieldset>
+  );
+}
+
+function RoteiroField({ name, value, onChange }: { name: string; value: string; onChange: (v: string) => void }) {
+  return (
+    <fieldset>
+      <legend className="mb-2 font-medium">Roteiro da entrevista</legend>
+      <div className="space-y-2">
+        {roteiros.map((r) => (
+          <label key={r.id} className={cn("flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition", value === r.id ? "border-primary bg-primary/5" : "hover:bg-slate-50")}>
+            <input type="radio" name={name} checked={value === r.id} onChange={() => onChange(r.id)} className="mt-1 accent-primary" />
+            <span><span className="block font-medium">{r.nome}</span><span className="text-xs text-muted-foreground">{r.detalhe}</span></span>
+          </label>
+        ))}
+      </div>
+    </fieldset>
   );
 }
