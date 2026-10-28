@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
 import {
-  Award, BarChart3, Bot, Brain, Briefcase, Building2, ClipboardCheck, ClipboardList, FileText, HeartHandshake, HeartPulse,
+  Award, Bot, Brain, Briefcase, Building2, ClipboardCheck, ClipboardList, FileText, HeartHandshake, HeartPulse, LayoutDashboard,
   type LucideIcon, Menu, Power, Rocket, Sparkles, TrendingUp, User, UserPlus, Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -36,8 +36,8 @@ const empresaMenu: Item[] = [
 
 // Barra superior preta da visão do administrador.
 const topNav: { label: string; icon: LucideIcon; to: To; exact?: boolean }[] = [
+  { label: "Dashboard", icon: LayoutDashboard, to: "/relatorio" },
   { label: "Roteiros", icon: FileText, to: "/", exact: true },
-  { label: "Relatório", icon: BarChart3, to: "/relatorio" },
 ];
 
 const itemCls =
