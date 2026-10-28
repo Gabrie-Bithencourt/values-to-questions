@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as EmpresaRouteImport } from './routes/empresa'
 import { Route as RelatorioIndexRouteImport } from './routes/relatorio/index'
 import { Route as RelatorioIdRouteImport } from './routes/relatorio/$id'
+import { Route as RelatorioListaRouteImport } from './routes/relatorio/lista'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -34,17 +35,24 @@ const RelatorioIdRoute = RelatorioIdRouteImport.update({
   path: '/relatorio/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RelatorioListaRoute = RelatorioListaRouteImport.update({
+  id: '/relatorio/lista',
+  path: '/relatorio/lista',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/empresa': typeof EmpresaRoute
   '/relatorio/$id': typeof RelatorioIdRoute
+  '/relatorio/lista': typeof RelatorioListaRoute
   '/relatorio/': typeof RelatorioIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/empresa': typeof EmpresaRoute
   '/relatorio/$id': typeof RelatorioIdRoute
+  '/relatorio/lista': typeof RelatorioListaRoute
   '/relatorio': typeof RelatorioIndexRoute
 }
 export interface FileRoutesById {
@@ -52,20 +60,29 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/empresa': typeof EmpresaRoute
   '/relatorio/$id': typeof RelatorioIdRoute
+  '/relatorio/lista': typeof RelatorioListaRoute
   '/relatorio/': typeof RelatorioIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/empresa' | '/relatorio/$id' | '/relatorio/'
+  fullPaths:
+    '/' | '/empresa' | '/relatorio/$id' | '/relatorio/lista' | '/relatorio/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/empresa' | '/relatorio/$id' | '/relatorio'
-  id: '__root__' | '/' | '/empresa' | '/relatorio/$id' | '/relatorio/'
+  to: '/' | '/empresa' | '/relatorio/$id' | '/relatorio/lista' | '/relatorio'
+  id:
+    | '__root__'
+    | '/'
+    | '/empresa'
+    | '/relatorio/$id'
+    | '/relatorio/lista'
+    | '/relatorio/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   EmpresaRoute: typeof EmpresaRoute
   RelatorioIdRoute: typeof RelatorioIdRoute
+  RelatorioListaRoute: typeof RelatorioListaRoute
   RelatorioIndexRoute: typeof RelatorioIndexRoute
 }
 
@@ -99,6 +116,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RelatorioIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/relatorio/lista': {
+      id: '/relatorio/lista'
+      path: '/relatorio/lista'
+      fullPath: '/relatorio/lista'
+      preLoaderRoute: typeof RelatorioListaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -106,6 +130,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   EmpresaRoute: EmpresaRoute,
   RelatorioIdRoute: RelatorioIdRoute,
+  RelatorioListaRoute: RelatorioListaRoute,
   RelatorioIndexRoute: RelatorioIndexRoute,
 }
 export const routeTree = rootRouteImport

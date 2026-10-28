@@ -58,7 +58,7 @@ export function RoteiroBuilder({ variant = "admin" }: { variant?: "admin" | "emp
         </div>
       )}
 
-      <div className={cn("grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]", !empresa && "mt-6")}>
+      <div className={cn("grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]", !empresa && "mt-6")}>
         <section className="space-y-6">
           {mode === "livre" ? <LivreForm key="livre" /> : <FitForm key="fit" value={fit} onChange={setFit} />}
           <Button size="lg" onClick={generate} disabled={loading} className="w-full sm:w-auto">

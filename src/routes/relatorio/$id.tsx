@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import {
   AlertCircle, ArrowLeft, ChevronDown, ChevronRight, CheckCircle2, Clock, Download, Lightbulb,
@@ -49,23 +49,33 @@ function Analise() {
   const { id } = Route.useParams();
   const e = entrevistas.find((x) => x.id === id) ?? entrevistas[0]!;
   const [dia, hora] = e.data.split(" ");
+  const navigate = useNavigate();
+  const concluidas = entrevistas.filter((x) => x.status === "Concluída");
   const [filter, setFilter] = useState<Status | "todas">("todas");
   const list = filter === "todas" ? comps : comps.filter((c) => c.status === filter);
   const count = (k: Status | "todas") => (k === "todas" ? comps.length : comps.filter((c) => c.status === k).length);
 
   return (
     <LegacyShell variant="admin">
-      <div>
-        <header className="flex items-center gap-3">
-          <Link to="/relatorio" className="rounded-md p-1 text-muted-foreground hover:bg-muted" aria-label="Voltar"><ArrowLeft className="size-5" /></Link>
-          <h1 className="text-2xl font-semibold tracking-tight">Análise da entrevista</h1>
+      <div className="@container/page">
+        <header className="flex flex-wrap items-center gap-3">
+          <Link to="/relatorio/lista" className="rounded-md p-1 text-muted-foreground hover:bg-muted" aria-label="Voltar para a lista"><ArrowLeft className="size-5" /></Link>
+          <h1 className="min-w-0 flex-1 basis-48 text-2xl font-semibold tracking-tight">Análise da entrevista</h1>
+          <select
+            value={e.id}
+            onChange={(ev) => navigate({ to: "/relatorio/$id", params: { id: ev.target.value } })}
+            aria-label="Escolher entrevista"
+            className="w-full rounded-lg border border-input bg-card px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-ring/30 sm:w-auto"
+          >
+            {concluidas.map((x) => <option key={x.id} value={x.id}>{x.nome} · {x.vaga}</option>)}
+          </select>
         </header>
         <p className="mt-1 text-sm text-muted-foreground">Confira o resultado da avaliação e as evidências encontradas durante a entrevista.</p>
 
-        <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
+        <div className="mt-6 grid grid-cols-1 gap-6 @5xl/page:grid-cols-[minmax(0,1fr)_380px]">
           <div className="@container min-w-0 space-y-5">
             {/* Candidato */}
-            <div className="grid gap-4 rounded-2xl border bg-card p-5 @md:grid-cols-2 @3xl:grid-cols-[1.2fr_1fr_1fr_auto]">
+            <div className="grid grid-cols-1 gap-4 rounded-2xl border bg-card p-5 @md:grid-cols-2 @3xl:grid-cols-[1.2fr_1fr_1fr_auto]">
               <div className="flex items-center gap-3">
                 <span className="grid size-12 place-items-center rounded-full bg-accent text-primary"><User className="size-6" /></span>
                 <div><p className="font-semibold">{e.nome}</p><p className="text-xs text-muted-foreground">{e.tipo}</p><p className="text-xs text-muted-foreground">{e.email}</p></div>
@@ -84,8 +94,8 @@ function Analise() {
             </div>
 
             {/* Métricas */}
-            <div className="grid gap-x-6 gap-y-5 rounded-2xl border bg-card p-5 @md:grid-cols-3 @3xl:grid-cols-4">
-              <div className="flex items-center gap-3 @md:col-span-3 @3xl:col-span-1">
+            <div className="grid grid-cols-1 gap-x-6 gap-y-5 rounded-2xl border bg-card p-5 @md:grid-cols-3 @4xl:grid-cols-4">
+              <div className="flex items-center gap-3 @md:col-span-3 @4xl:col-span-1">
                 <div className="relative grid size-16 shrink-0 place-items-center">
                   <svg viewBox="0 0 36 36" className="absolute inset-0 -rotate-90">
                     <circle cx="18" cy="18" r="15.5" fill="none" className="stroke-muted" strokeWidth="3" />
@@ -155,7 +165,7 @@ function Analise() {
             <div className="flex flex-wrap gap-2">
               <Button variant="outline" size="sm"><Download /> Exportar relatório</Button>
               <Button variant="outline" size="sm"><PenLine /> Revisar avaliação</Button>
-              <Button size="sm" asChild><Link to="/relatorio"><ArrowLeft /> Voltar para a lista</Link></Button>
+              <Button size="sm" asChild><Link to="/relatorio/lista"><ArrowLeft /> Voltar para a lista</Link></Button>
             </div>
           </div>
         </div>
@@ -166,7 +176,7 @@ function Analise() {
 
 function Metric({ label, value, pct, muted }: { label: string; value: React.ReactNode; pct: number; muted?: boolean }) {
   return (
-    <div className="@3xl:border-l @3xl:pl-4">
+    <div className="@4xl:border-l @4xl:pl-4">
       <p className="text-xs text-muted-foreground">{label}</p>
       <p className="mt-1 text-2xl font-semibold">{value}</p>
       <div className="mt-2 h-1.5 rounded-full bg-muted"><div className={cn("h-full rounded-full", muted ? "bg-muted-foreground/50" : "bg-primary")} style={{ width: `${pct}%` }} /></div>
@@ -185,7 +195,7 @@ function CompCard({ c }: { c: Comp }) {
         <span className={cn("rounded-md px-2.5 py-1 text-xs font-medium", warn ? "bg-card text-warning" : "bg-accent text-primary")}>{warn ? "Evidência insuficiente" : "Identificada"}</span>
         <span className="rounded-lg border bg-card px-3 py-1 text-sm"><b className="text-lg">{c.nota ?? "—"}</b> <span className="text-muted-foreground">/ 5</span></span>
       </div>
-      <div className="grid gap-4 @md:pl-14 @2xl:grid-cols-[160px_1fr_auto]">
+      <div className="grid grid-cols-1 gap-4 @md:pl-14 @2xl:grid-cols-[160px_1fr_auto]">
         <div>
           <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Evidência</p>
           <p className={cn("text-sm font-semibold", warn ? "text-warning" : "text-primary")}>{warn ? "Insuficiente" : "Suficiente"}</p>
