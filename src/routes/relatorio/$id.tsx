@@ -73,7 +73,8 @@ function Analise() {
         <p className="mt-1 text-sm text-muted-foreground">Confira o resultado da avaliação e as evidências encontradas durante a entrevista.</p>
 
         <div className="mt-6 grid grid-cols-1 gap-6 @5xl/page:grid-cols-[minmax(0,1fr)_380px]">
-          <div className="@container min-w-0 space-y-5">
+          <div className="contents @5xl/page:block @5xl/page:min-w-0 @5xl/page:space-y-5 @5xl/page:@container">
+            <div className="order-1 space-y-5 @5xl/page:order-none">
             {/* Candidato */}
             <div className="grid grid-cols-1 gap-4 rounded-2xl border bg-card p-5 @md:grid-cols-2 @3xl:grid-cols-[1.2fr_1fr_1fr_auto]">
               <div className="flex items-center gap-3">
@@ -110,6 +111,8 @@ function Analise() {
               <Metric label="Precisam de revisão" value="1" pct={25} muted />
             </div>
 
+            </div>
+            <div className="order-3 space-y-5 @5xl/page:order-none">
             {/* Filtros */}
             <div className="flex flex-wrap gap-2">
               {filters.map((f) => (
@@ -128,11 +131,12 @@ function Analise() {
               {list.length === 0 && <p className="rounded-xl border border-dashed bg-card p-8 text-center text-sm text-muted-foreground">Nenhuma competência nesta categoria.</p>}
               {list.map((c) => <CompCard key={c.name} c={c} />)}
             </div>
+            </div>
           </div>
 
           {/* Lateral */}
-          <div className="space-y-5">
-            <div className="rounded-2xl border bg-card p-5">
+          <div className="contents @5xl/page:block @5xl/page:space-y-5">
+            <div className="order-2 rounded-2xl border bg-card p-5 @5xl/page:order-none">
               <h2 className="flex items-center gap-2 font-semibold"><Sparkles className="size-5 text-primary" /> Resumo da análise</h2>
               <p className="mt-2 text-sm text-muted-foreground">O candidato demonstra um bom alinhamento com os valores da empresa, especialmente nas competências de colaboração e responsabilidade. A autonomia e a inovação são pontos que podem ser explorados em uma próxima conversa.</p>
               <div className="mt-4 border-t pt-4">
@@ -152,7 +156,7 @@ function Analise() {
               </div>
             </div>
 
-            <div className="rounded-2xl border bg-card p-5">
+            <div className="order-4 rounded-2xl border bg-card p-5 @5xl/page:order-none">
               <h2 className="flex items-center gap-2 font-semibold"><FileSearch className="size-5 text-primary" /> Evidências da entrevista</h2>
               <p className="text-xs text-muted-foreground">Veja os trechos das respostas que fundamentaram a avaliação.</p>
               <button className="mt-3 flex w-full flex-wrap items-center gap-2 rounded-lg border px-3 py-2 text-sm hover:bg-muted">
@@ -162,7 +166,7 @@ function Analise() {
               <div className="mt-3 space-y-3">{evidencias.map((e, i) => <Evidence key={i} e={e} />)}</div>
             </div>
 
-            <div className="flex flex-wrap gap-2">
+            <div className="order-5 flex flex-wrap gap-2 @5xl/page:order-none">
               <Button variant="outline" size="sm"><Download /> Exportar relatório</Button>
               <Button variant="outline" size="sm"><PenLine /> Revisar avaliação</Button>
               <Button size="sm" asChild><Link to="/relatorio/lista"><ArrowLeft /> Voltar para a lista</Link></Button>
