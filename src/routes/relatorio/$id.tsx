@@ -59,7 +59,7 @@ function Analise() {
     <LegacyShell variant="admin">
       <div className="@container/page">
         <header className="flex flex-wrap items-center gap-3">
-          <Link to="/relatorio/lista" className="rounded-md p-1 text-muted-foreground hover:bg-muted" aria-label="Voltar para a lista"><ArrowLeft className="size-5" /></Link>
+          <Link to="/relatorio" className="rounded-md p-1 text-muted-foreground hover:bg-muted" aria-label="Voltar para a lista"><ArrowLeft className="size-5" /></Link>
           <h1 className="min-w-0 flex-1 basis-48 text-2xl font-semibold tracking-tight">Análise da entrevista</h1>
           <select
             value={e.id}
@@ -169,7 +169,7 @@ function Analise() {
             <div className="order-5 flex flex-wrap gap-2 @5xl/page:order-none">
               <Button variant="outline" size="sm"><Download /> Exportar relatório</Button>
               <Button variant="outline" size="sm"><PenLine /> Revisar avaliação</Button>
-              <Button size="sm" asChild><Link to="/relatorio/lista"><ArrowLeft /> Voltar para a lista</Link></Button>
+              <Button size="sm" asChild><Link to="/relatorio"><ArrowLeft /> Voltar para a lista</Link></Button>
             </div>
           </div>
         </div>
