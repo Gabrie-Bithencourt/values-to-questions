@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { AppSidebar } from "@/components/AppSidebar";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -118,31 +119,7 @@ export function Index() {
   );
 }
 
-function Sidebar() {
-  const items = [
-    { icon: Home, label: "Início" },
-    { icon: FileText, label: "Roteiros de entrevista", active: true },
-    { icon: MessageSquare, label: "Entrevistas" },
-    { icon: Users, label: "Candidatos" },
-    { icon: BarChart3, label: "Relatórios" },
-    { icon: Settings, label: "Configurações" },
-  ];
-  return (
-    <aside className="hidden w-60 shrink-0 border-r border-sidebar-border bg-sidebar p-4 lg:block">
-      <div className="mb-8 flex items-center gap-2 px-2 text-lg font-semibold">
-        <span className="grid size-8 place-items-center rounded-lg bg-primary text-primary-foreground"><Sparkles className="size-4" /></span>
-        TalentAI
-      </div>
-      <nav className="space-y-1">
-        {items.map(({ icon: Icon, label, active }) => (
-          <a key={label} href="#" className={cn("flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-sidebar-foreground hover:bg-sidebar-accent", active && "bg-sidebar-accent font-medium text-sidebar-accent-foreground")}>
-            <Icon className="size-4" /> {label}
-          </a>
-        ))}
-      </nav>
-    </aside>
-  );
-}
+const Sidebar = AppSidebar;
 
 function ModeCard({ active, onClick, icon, title, desc }: { active: boolean; onClick: () => void; icon: React.ReactNode; title: string; desc: string }) {
   return (
