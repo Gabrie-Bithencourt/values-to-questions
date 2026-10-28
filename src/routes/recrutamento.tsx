@@ -46,7 +46,7 @@ const inicial: Candidato[] = [
   { id: "7", nome: "Juliana Alves", etapa: "ia" },
 ];
 
-type Config = { voz: boolean; roteiro: string; todos: boolean; auto: boolean };
+type Config = { voz: boolean; roteiro: string; envio: "selecionados" | "todos"; auto: boolean };
 
 function Recrutamento() {
   const [vaga, setVaga] = useState(vagas[0]!);
@@ -54,14 +54,14 @@ function Recrutamento() {
   const [candidatos, setCandidatos] = useState(inicial);
   const [selecionados, setSelecionados] = useState<string[]>([]);
   const [aberto, setAberto] = useState(false);
-  const [config, setConfig] = useState<Config>({ voz: false, roteiro: roteiros[0]!.id, todos: false, auto: false });
+  const [config, setConfig] = useState<Config>({ voz: false, roteiro: roteiros[0]!.id, envio: "selecionados", auto: false });
   const [aviso, setAviso] = useState("");
 
   const termo = busca.trim().toLowerCase();
   const daEtapa = (id: EtapaId) => candidatos.filter((c) => c.etapa === id && (!termo || c.nome.toLowerCase().includes(termo)));
   const naEtapaIA = candidatos.filter((c) => c.etapa === "ia");
 
-  const alvo = config.todos ? naEtapaIA : naEtapaIA.filter((c) => selecionados.includes(c.id));
+  const alvo = config.envio === "todos" ? naEtapaIA : naEtapaIA.filter((c) => selecionados.includes(c.id));
 
   const toggle = (id: string) => setSelecionados((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]));
 
@@ -169,18 +169,25 @@ function Recrutamento() {
             </fieldset>
 
             <fieldset>
-              <legend className="mb-2 font-medium">Automações</legend>
+              <legend className="mb-2 font-medium">Envios</legend>
               <div className="space-y-2">
                 <label className="flex cursor-pointer items-center gap-3 rounded-lg border p-3">
-                  <Checkbox checked={config.todos} onCheckedChange={(v) => setConfig((c) => ({ ...c, todos: v === true }))} />
-                  <span className="min-w-0 flex-1">Enviar para todos da etapa ({naEtapaIA.length})</span>
+                  <input type="radio" name="envio" checked={config.envio === "selecionados"} onChange={() => setConfig((c) => ({ ...c, envio: "selecionados" }))} className="accent-primary" />
+                  Enviar para selecionados ({naEtapaIA.filter((c) => selecionados.includes(c.id)).length})
                 </label>
                 <label className="flex cursor-pointer items-center gap-3 rounded-lg border p-3">
-                  <Checkbox checked={config.auto} onCheckedChange={(v) => setConfig((c) => ({ ...c, auto: v === true }))} />
-                  <span className="min-w-0 flex-1">Envio automático quando o usuário for inserido na etapa</span>
+                  <input type="radio" name="envio" checked={config.envio === "todos"} onChange={() => setConfig((c) => ({ ...c, envio: "todos" }))} className="accent-primary" />
+                  Enviar para todos da etapa ({naEtapaIA.length})
                 </label>
               </div>
-              {!config.todos && <p className="mt-2 text-xs text-muted-foreground">Sem "Enviar para todos", o convite vai só para os selecionados ({naEtapaIA.filter((c) => selecionados.includes(c.id)).length}).</p>}
+            </fieldset>
+
+            <fieldset>
+              <legend className="mb-2 font-medium">Automações</legend>
+              <label className="flex cursor-pointer items-center gap-3 rounded-lg border p-3">
+                <Checkbox checked={config.auto} onCheckedChange={(v) => setConfig((c) => ({ ...c, auto: v === true }))} />
+                <span className="min-w-0 flex-1">Envio automático quando o usuário for inserido na etapa</span>
+              </label>
             </fieldset>
           </div>
 
