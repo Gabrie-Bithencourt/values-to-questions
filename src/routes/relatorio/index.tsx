@@ -63,7 +63,7 @@ function Relatorio() {
     <LegacyShell variant="admin">
       <PageHeader title="Relatório de entrevistas" subtitle="Acompanhe os entrevistados e consulte a análise de cada entrevista feita pela IA." />
 
-      <div className="space-y-5 rounded-2xl border bg-card p-5">
+      <div className="space-y-5">
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1.5fr]">
           <label className="text-xs font-medium text-muted-foreground">
             Empresa

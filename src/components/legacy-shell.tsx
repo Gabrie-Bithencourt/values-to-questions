@@ -1,14 +1,13 @@
 import { Link } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
 import {
-  Award, Briefcase, Building2, Calendar, ChevronDown, ClipboardCheck, ClipboardList, DollarSign,
-  HeartHandshake, HeartPulse, LayoutDashboard, type LucideIcon, Menu, MessageSquare, Power, Rocket, Search, Settings,
-  Sparkles, TrendingUp, User, UserPlus, Users, Brain, Bot,
+  Award, BarChart3, Brain, Briefcase, Building2, ClipboardCheck, ClipboardList, FileText, HeartHandshake, HeartPulse,
+  type LucideIcon, Menu, Power, Rocket, Sparkles, TrendingUp, User, UserPlus, Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type To = "/" | "/relatorio" | "/empresa";
-type Item = { label: string; icon: LucideIcon; to?: To; exact?: boolean; badge?: string; children?: { label: string; to: To; exact?: boolean }[] };
+type Item = { label: string; icon: LucideIcon; to?: To; exact?: boolean; badge?: string };
 
 // Menu lateral do sistema (administrador). Os itens sem rota são só contexto visual.
 const adminMenu: Item[] = [
@@ -17,14 +16,6 @@ const adminMenu: Item[] = [
   { label: "Sucessão e Carreira", icon: Rocket },
   { label: "Pesquisa NPS/eNPS", icon: TrendingUp },
   { label: "Recrutamento e Seleção", icon: UserPlus },
-  {
-    label: "Entrevista com IA",
-    icon: Bot,
-    children: [
-      { label: "Roteiros de entrevistas", to: "/", exact: true },
-      { label: "Relatório", to: "/relatorio" },
-    ],
-  },
   { label: "Questionários", icon: ClipboardList },
   { label: "Mapeamento Perfil - People Skills", icon: Brain },
   { label: "Mapeamento Psicossocial - NR1", icon: HeartPulse, badge: "Novo" },
@@ -41,17 +32,10 @@ const empresaMenu: Item[] = [
   { label: "Sair", icon: Power },
 ];
 
-const topNav: { label: string; icon: LucideIcon; caret?: boolean }[] = [
-  { label: "Painel", icon: LayoutDashboard, caret: true },
-  { label: "Candidatos", icon: Users },
-  { label: "Processos", icon: UserPlus },
-  { label: "Vagas", icon: Briefcase },
-  { label: "Estágios", icon: ClipboardList, caret: true },
-  { label: "Empresas", icon: Building2 },
-  { label: "Feedback", icon: MessageSquare, caret: true },
-  { label: "Agenda", icon: Calendar },
-  { label: "Faturamento", icon: DollarSign },
-  { label: "Configurações", icon: Settings, caret: true },
+// Barra superior preta da visão do administrador.
+const topNav: { label: string; icon: LucideIcon; to: To; exact?: boolean }[] = [
+  { label: "Roteiros", icon: FileText, to: "/", exact: true },
+  { label: "Relatório", icon: BarChart3, to: "/relatorio" },
 ];
 
 const itemCls =
@@ -71,30 +55,6 @@ function NavLink({ item }: { item: Item }) {
   return <a href="#" onClick={(e) => e.preventDefault()} className={itemCls}>{content}</a>;
 }
 
-function NavGroup({ item }: { item: Item }) {
-  const [open, setOpen] = useState(true);
-  const Icon = item.icon;
-  return (
-    <div>
-      <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} className={itemCls}>
-        <Icon className={iconCls} />
-        <span className="min-w-0 flex-1 font-medium">{item.label}</span>
-        <ChevronDown className={cn("size-4 text-slate-400 transition", open && "rotate-180")} />
-      </button>
-      {open && (
-        <div className="mt-1 space-y-1 pl-6">
-          {item.children?.map((c) => (
-            <Link key={c.label} to={c.to} activeOptions={{ exact: c.exact ?? false }} className={cn(itemCls, "py-2")}>
-              <span className="size-1.5 shrink-0 rounded-full bg-slate-300 group-data-[status=active]:bg-white" />
-              {c.label}
-            </Link>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
 // Moldura do sistema: menu lateral recolhível (e barra superior preta na visão do administrador).
 export function LegacyShell({ variant, children }: { variant: "admin" | "empresa"; children: ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -112,7 +72,7 @@ export function LegacyShell({ variant, children }: { variant: "admin" | "empresa
 
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r bg-card shadow-xl transition-transform lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 lg:shadow-none",
+          "fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r bg-white shadow-xl transition-transform lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 lg:shadow-none",
           mobileOpen ? "translate-x-0" : "-translate-x-full",
           collapsed && "lg:hidden",
         )}
@@ -124,7 +84,7 @@ export function LegacyShell({ variant, children }: { variant: "admin" | "empresa
           </span>
         </div>
         <nav className="flex-1 space-y-1 overflow-y-auto p-2.5" onClick={() => setMobileOpen(false)}>
-          {menu.map((item) => (item.children ? <NavGroup key={item.label} item={item} /> : <NavLink key={item.label} item={item} />))}
+          {menu.map((item) => <NavLink key={item.label} item={item} />)}
         </nav>
       </aside>
 
@@ -133,20 +93,27 @@ export function LegacyShell({ variant, children }: { variant: "admin" | "empresa
           <header className="flex h-14 shrink-0 items-center gap-1 bg-black px-2 text-white">
             <button type="button" onClick={toggleMenu} aria-label="Abrir ou fechar menu" className="rounded-md p-2 hover:bg-white/15"><Menu className="size-5" /></button>
             <nav className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              {topNav.map(({ label, icon: Icon, caret }) => (
-                <a key={label} href="#" onClick={(e) => e.preventDefault()} className="flex shrink-0 items-center gap-2 rounded-md px-3 py-2 text-xs font-bold uppercase tracking-wide hover:bg-white/15">
-                  <Icon className="size-5" /> {label} {caret && <ChevronDown className="size-3" />}
-                </a>
+              {topNav.map(({ label, icon: Icon, to, exact }) => (
+                <Link
+                  key={label}
+                  to={to}
+                  activeOptions={{ exact: exact ?? false }}
+                  className="flex shrink-0 items-center gap-2 rounded-md px-3 py-2 text-xs font-bold uppercase tracking-wide hover:bg-white/15 data-[status=active]:bg-white/20"
+                >
+                  <Icon className="size-5" /> {label}
+                </Link>
               ))}
             </nav>
-            <Search className="mx-3 size-5 shrink-0" aria-hidden />
           </header>
         ) : (
-          <header className="flex h-12 shrink-0 items-center border-b bg-card px-2">
+          <header className="flex h-12 shrink-0 items-center border-b bg-white px-2">
             <button type="button" onClick={toggleMenu} aria-label="Abrir ou fechar menu" className="rounded-md p-2 text-slate-500 hover:bg-slate-100"><Menu className="size-5" /></button>
           </header>
         )}
-        <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-8">{children}</main>
+        <main className="min-w-0 flex-1 p-4 sm:p-6">
+          {/* Padrão do sistema: todo o conteúdo fica num container branco sobre o fundo cinza. */}
+          <div className="rounded-lg bg-white p-4 shadow-sm sm:p-6 lg:p-8">{children}</div>
+        </main>
       </div>
     </div>
   );
