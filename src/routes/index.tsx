@@ -90,8 +90,10 @@ export function Index() {
           Preencha o contexto, deixe a IA montar o esqueleto e ajuste tudo do seu jeito.
         </p>
 
-        <div className="mt-6 grid max-w-xl grid-cols-2 gap-3">
-          <ModeCard active={mode === "livre"} onClick={() => setMode("livre")} icon={<PenLine className="size-5" />} title="Roteiro livre" desc="Descreva o que quer avaliar" />
+        <div className={cn("mt-6 grid max-w-xl gap-3", !clientView && "grid-cols-2")}>
+          {!clientView && (
+            <ModeCard active={mode === "livre"} onClick={() => setMode("livre")} icon={<PenLine className="size-5" />} title="Roteiro livre" desc="Descreva o que quer avaliar" />
+          )}
           <ModeCard active={mode === "fit"} onClick={() => setMode("fit")} icon={<HeartHandshake className="size-5" />} title="Fit cultural" desc="Baseado na cultura da empresa" />
         </div>
 
